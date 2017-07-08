@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- build:inlinecss -->
+  <link rel="stylesheet" href="css/normalize.css"/>
+  <link rel="stylesheet" href="css/app.css"/>
+  <!-- endbuild -->
+
+  <script src="js/jquery-3.2.1.min.js"></script>
+
+  <!-- build:inlinejs -->
+  <script src="js/Quake2.js"></script>
+  <!-- endbuild -->
+
+</head>
+<body>
+
+
+  <canvas id="canvas"></canvas>
+
+
+  <script id="world-vertex-shader" type="application/glsl">
+uniform vec3 Position;
+uniform vec2 Angle;
+
+attribute vec3 in_Vertex;
+attribute vec3 in_Normal;
+attribute vec2 in_TextureCoordinates;
+attribute vec2 in_TextureOrigin;
+attribute vec2 in_TextureSize;
+
+const float PI = acos(-1.0);
+const vec3 Light = normalize(vec3(1, 2, 3));
+
+varying float ex_Brightness;
+varying vec2 ex_TextureCoordinates;
+varying vec2 ex_TextureOrigin;
+varying vec2 ex_TextureSize;
+
+void main() {
+  ex_Brightness = 1.0 - abs(acos(dot(Light, in_Normal))) / PI;
+  ex_TextureCoordinates = in_TextureCoordinates;
+  ex_TextureOrigin = in_TextureOrigin;
+  ex_TextureSize = in_TextureSize;
+  vec4 Vertex = vec4(in_Vertex, 1);
+  gl_Position = mat4(
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 0, 1,
+    0, 0, 1, 1
+  ) * mat4(
+    1, 0, 0, 0,
+    0, cos(Angle.x), sin(Angle.x), 0,
+    0, -sin(Angle.x), cos(Angle.x), 0,
+    0, 0, 0, 1
+  ) * mat4(
+    cos(Angle.y), 0, -sin(Angle.y), 0,
+    0, 1, 0, 0,
+    sin(Angle.y), 0, cos(Angle.y), 0,
+    0, 0, 0, 1
+  ) * mat4(
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    -Position, 1
+  ) * vec4(in_Vertex, 1);
+}
+  </script>
+
+
+  <script id="world-fragment-shader" type="application/glsl">
+precision mediump float;
+
+uniform sampler2D Palette;
+uniform sampler2D Atlas;
+uniform vec2 AtlasSize;
+
+varying float ex_Brightness;
+varying vec2 ex_TextureCoordinates;
+varying vec2 ex_TextureOrigin;
+varying vec2 ex_TextureSize;
+
+vec2 mod2(vec2 a, vec2 b) {
+  return mod(mod(a, b) + b, b);
+}
+
+void main() {
+  vec2 TextureCoordinates = ex_TextureOrigin + mod2(
+    ex_TextureCoordinates, ex_TextureSize
+    );
+  float Index = texture2D(Atlas, TextureCoordinates / AtlasSize).r;
+  vec4 Color = texture2D(Palette, vec2(Index, 0.002));
+  gl_FragColor = vec4(vec3(Color) * ex_Brightness, Color.a);
+}
+  </script>
+
+
+  <script id="model-vertex-shader" type="application/glsl">
+uniform struct {
+  vec3 Position;
+  vec2 Angle;
+} Camera;
+
+uniform vec3 Position;
+uniform float Angle;
+uniform float Step;
+
+attribute vec3 in_PreviousVertex;
+attribute vec3 in_NextVertex;
+attribute vec3 in_PreviousNormal;
+attribute vec3 in_NextNormal;
+attribute vec2 in_TextureCoordinates;
+
+const float PI = acos(-1.0);
+const vec3 Light = normalize(vec3(1, 2, 3));
+
+varying float ex_Brightness;
+varying vec2 ex_TextureCoordinates;
+
+void main() {
+  vec3 Normal = mat3(
+    cos(Angle), 0, sin(Angle),
+    0, 1, 0,
+    -sin(Angle), 0, cos(Angle)
+  ) * mix(in_PreviousNormal, in_NextNormal, Step);
+  ex_Brightness = 1.0 - abs(acos(dot(Light, Normal))) / PI;
+  ex_TextureCoordinates = in_TextureCoordinates;
+  gl_Position = mat4(
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 0, 1,
+    0, 0, 1, 1
+  ) * mat4(
+    1, 0, 0, 0,
+    0, cos(Camera.Angle.x), sin(Camera.Angle.x), 0,
+    0, -sin(Camera.Angle.x), cos(Camera.Angle.x), 0,
+    0, 0, 0, 1
+  ) * mat4(
+    cos(Camera.Angle.y), 0, -sin(Camera.Angle.y), 0,
+    0, 1, 0, 0,
+    sin(Camera.Angle.y), 0, cos(Camera.Angle.y), 0,
+    0, 0, 0, 1
+  ) * mat4(
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    Position - Camera.Position, 1
+  ) * mat4(
+    cos(Angle), 0, sin(Angle), 0,
+    0, 1, 0, 0,
+    -sin(Angle), 0, cos(Angle), 0,
+    0, 0, 0, 1
+  ) * vec4(mix(in_PreviousVertex, in_NextVertex, Step), 1);
+}
+  </script>
+
+
+  <script id="model-fragment-shader" type="application/glsl">
+precision mediump float;
+
+uniform sampler2D Texture;
+
+varying float ex_Brightness;
+varying vec2 ex_TextureCoordinates;
+
+void main() {
+  vec4 Color = texture2D(Texture, ex_TextureCoordinates);
+  gl_FragColor = vec4(vec3(Color) * ex_Brightness, Color.a);
+}
+  </script>
+
+
+</body>
+</html>
