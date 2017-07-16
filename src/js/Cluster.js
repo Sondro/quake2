@@ -1,9 +1,4 @@
-Quake2.EmptyCluster = function () {};
-
-Quake2.EmptyCluster.prototype.render = function () {};
-
-
-Quake2.Cluster = function (gl, data, index, size) {
+Quake2.Cluster = function (gl, data, index) {
   this._gl = gl;
 
   this._vertexBuffer = gl.createBuffer();
@@ -76,7 +71,7 @@ Quake2.Cluster = function (gl, data, index, size) {
     _pushFace(data.leaves.faces.table[data.leaves.faces.first[index] + i]);
   }
 
-  this.size = vertices.length / 3;
+  this._size = vertices.length / 3;
 
   gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -122,6 +117,6 @@ Quake2.Cluster.load = function (gl, data, index) {
   if (data.leaves.faces.count[index] > 0) {
     return new Quake2.Cluster(gl, data, index);
   } else {
-    return new Quake2.EmptyCluster();
+    return null;
   }
 };

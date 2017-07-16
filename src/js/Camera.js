@@ -1,4 +1,5 @@
-Quake2.Camera = function () {
+Quake2.Camera = function (bsp) {
+  this._bsp = bsp;
   this.position = {
     x: 0,
     y: 0,
@@ -13,7 +14,7 @@ Quake2.Camera = function () {
     x: 0,
     y: 0
   };
-}
+};
 
 Quake2.Camera.VELOCITY = 200;  // Quake units per second
 

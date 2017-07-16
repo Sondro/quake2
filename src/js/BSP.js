@@ -21,9 +21,11 @@ Quake2.BSP.prototype._parse = function (data, index) {
   if (index < 0) {
     const leafIndex = -(index + 1);
     const clusterIndex = data.leaves.cluster[leafIndex];
-    var clusters = clusterIndex < 0 ? [] : this._pvs[clusterIndex].map(function (i) {
+    const clusters = clusterIndex < 0 ? [] : this._pvs[clusterIndex].map(function (i) {
       return this._clusters[i];
-    }, this);
+    }, this).filter(function (cluster) {
+      return !!cluster;
+    });
     return new Quake2.BSP.Leaf(data, leafIndex, clusters);
   } else {
     return new Quake2.BSP.Node(this, data, index);
