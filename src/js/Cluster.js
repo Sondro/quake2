@@ -1,11 +1,5 @@
-Quake2.Cluster = function (gl, data, index) {
+Quake2.Cluster = function (gl, data, faces) {
   this._gl = gl;
-
-  this._vertexBuffer = gl.createBuffer();
-  this._normalBuffer = gl.createBuffer();
-  this._textureCoordinateBuffer = gl.createBuffer();
-  this._textureOriginBuffer = gl.createBuffer();
-  this._textureSizeBuffer = gl.createBuffer();
 
   var vertices = [];
   var normals = [];
@@ -67,24 +61,29 @@ Quake2.Cluster = function (gl, data, index) {
     }
   };
 
-  for (var i = 0; i < data.leaves.faces.count[index]; i++) {
-    _pushFace(data.leaves.faces.table[data.leaves.faces.first[index] + i]);
+  for (var i = 0; i < faces.length; i++) {
+    _pushFace(i);
   }
 
   this._size = vertices.length / 3;
 
+  this._vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
+  this._normalBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, this._normalBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
 
+  this._textureCoordinateBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, this._textureCoordinateBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates), gl.STATIC_DRAW);
 
+  this._textureOriginBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, this._textureOriginBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureOrigins), gl.STATIC_DRAW);
 
+  this._textureSizeBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, this._textureSizeBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureSizes), gl.STATIC_DRAW);
 
@@ -110,13 +109,4 @@ Quake2.Cluster.prototype.render = function () {
   gl.vertexAttribPointer(4, 2, gl.FLOAT, false, 0, 0);
 
   gl.drawArrays(gl.TRIANGLES, 0, this._size);
-};
-
-
-Quake2.Cluster.load = function (gl, data, index) {
-  if (data.leaves.faces.count[index] > 0) {
-    return new Quake2.Cluster(gl, data, index);
-  } else {
-    return null;
-  }
 };

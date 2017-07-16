@@ -1,32 +1,54 @@
 Quake2.BSP = function (gl, data) {
   this._clusters = Object.create(null);
+  this._mapFaces(data, 0);
   this._createClusters(gl, data, 0);
   this._pvs = Quake2.PVS.parse(data);
   return this._parse(data, 0);
 };
 
-Quake2.BSP.prototype._createClusters = function (gl, data, index) {
+Quake2.BSP.prototype._mapFaces = function (data, index) {
   if (index < 0) {
-    const clusterIndex = data.leaves.cluster[-(index + 1)];
-    if (clusterIndex >= 0 && !this._clusters[clusterIndex]) {
-      this._clusters[clusterIndex] = Quake2.Cluster.load(gl, data, clusterIndex);
+    const leafIndex = -(index + 1);
+    const first = data.leaves.faces.first[leafIndex];
+    const count = data.leaves.faces.count[leafIndex];
+    const faces = data.leaves.faces.table.slice(first, first + count);
+    const clusterIndex = data.leaves.cluster[leafIndex];
+    if (clusterIndex >= 0) {
+      if (!(clusterIndex in this._clusters)) {
+        this._clusters[clusterIndex] = [];
+      }
+      this._clusters[clusterIndex] = this._clusters[clusterIndex].concat(faces);
     }
   } else {
-    this._createClusters(gl, data, data.nodes.front[index]);
-    this._createClusters(gl, data, data.nodes.back[index]);
+    this._mapFaces(data, data.nodes.front[index]);
+    this._mapFaces(data, data.nodes.back[index]);
+  }
+};
+
+Quake2.BSP.prototype._createClusters = function (gl, data) {
+  for (var i in this._clusters) {
+    this._clusters[i] = new Quake2.Cluster(gl, data, this._clusters[i]);
+  }
+};
+
+Quake2.BSP.prototype._getLeafClusters = function (data, leafIndex) {
+  const clusterIndex = data.leaves.cluster[leafIndex];
+  if (clusterIndex < 0) {
+    return [];
+  } else {
+    return this._pvs[clusterIndex].map(function (i) {
+      return this._clusters[i];
+    }, this).filter(function (cluster) {
+      return !!cluster;
+    });
   }
 };
 
 Quake2.BSP.prototype._parse = function (data, index) {
   if (index < 0) {
     const leafIndex = -(index + 1);
-    const clusterIndex = data.leaves.cluster[leafIndex];
-    const clusters = clusterIndex < 0 ? [] : this._pvs[clusterIndex].map(function (i) {
-      return this._clusters[i];
-    }, this).filter(function (cluster) {
-      return !!cluster;
-    });
-    return new Quake2.BSP.Leaf(data, leafIndex, clusters);
+    return new Quake2.BSP.Leaf(
+        data, leafIndex, this._getLeafClusters(data, leafIndex));
   } else {
     return new Quake2.BSP.Node(this, data, index);
   }
