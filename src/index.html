@@ -32,6 +32,7 @@
   <script id="world-vertex-shader" type="application/glsl">
 uniform vec3 Position;
 uniform vec2 Angle;
+uniform vec3 ScreenSize;
 
 attribute vec3 in_Vertex;
 attribute vec3 in_Normal;
@@ -54,8 +55,8 @@ void main() {
   ex_TextureSize = in_TextureSize;
   vec4 Vertex = vec4(in_Vertex, 1);
   gl_Position = mat4(
-    1, 0, 0, 0,
-    0, 1, 0, 0,
+    ScreenSize.z / ScreenSize.x, 0, 0, 0,
+    0, ScreenSize.z / ScreenSize.y, 0, 0,
     0, 0, 0, 1,
     0, 0, 1, 1
   ) * mat4(
@@ -114,6 +115,7 @@ uniform struct {
 uniform vec3 Position;
 uniform float Angle;
 uniform float Step;
+uniform vec3 ScreenSize;
 
 attribute vec3 in_PreviousVertex;
 attribute vec3 in_NextVertex;
@@ -136,8 +138,8 @@ void main() {
   ex_Brightness = 1.0 - abs(acos(dot(Light, Normal))) / PI;
   ex_TextureCoordinates = in_TextureCoordinates;
   gl_Position = mat4(
-    1, 0, 0, 0,
-    0, 1, 0, 0,
+    ScreenSize.z / ScreenSize.x, 0, 0, 0,
+    0, ScreenSize.z / ScreenSize.y, 0, 0,
     0, 0, 0, 1,
     0, 0, 1, 1
   ) * mat4(

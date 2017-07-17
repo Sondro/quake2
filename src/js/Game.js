@@ -55,6 +55,7 @@ Quake2.Game = function (gl, assets) {
   console.log(gl.getProgramInfoLog(this._program));
 
   this._locations = {
+    screenSize: gl.getUniformLocation(this._program, 'ScreenSize'),
     position: gl.getUniformLocation(this._program, 'Position'),
     angle: gl.getUniformLocation(this._program, 'Angle'),
     atlasSize: gl.getUniformLocation(this._program, 'AtlasSize'),
@@ -80,6 +81,14 @@ Quake2.Game = function (gl, assets) {
 };
 
 
+Quake2.Game.prototype.resize = function (width, height) {
+  const gl = this._gl;
+  gl.viewport(0, 0, width, height);
+  gl.useProgram(this._program);
+  gl.uniform3f(this._locations.screenSize, width, height, Math.max(width, height));
+};
+
+
 Quake2.Game.prototype.tick = function (t0, t1, keys) {
   this.camera.tick(t0, t1, keys);
 };
@@ -88,8 +97,7 @@ Quake2.Game.prototype.tick = function (t0, t1, keys) {
 Quake2.Game.prototype.render = function () {
   const gl = this._gl;
 
-  // TODO: don't clear the color buffer.
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.clear(gl.DEPTH_BUFFER_BIT);
 
   gl.useProgram(this._program);
 
