@@ -64,7 +64,7 @@ Quake2.Game = function (gl, assets) {
 
   gl.useProgram(this._program);
 
-  gl.uniform2f(this._locations.atlasSize, assets.colormap.width, assets.colormap.height);
+  gl.uniform2f(this._locations.atlasSize, assets.texture.width, assets.texture.height);
   gl.uniform1i(this._locations.palette, 0);
   gl.uniform1i(this._locations.atlas, 1);
 

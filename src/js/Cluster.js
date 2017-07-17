@@ -62,7 +62,7 @@ Quake2.Cluster = function (gl, data, faces) {
   };
 
   for (var i = 0; i < faces.length; i++) {
-    _pushFace(i);
+    _pushFace(faces[i]);
   }
 
   this._size = vertices.length / 3;
