@@ -70,22 +70,27 @@ Quake2.Cluster = function (gl, data, faces) {
   this._vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+  delete vertices;
 
   this._normalBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, this._normalBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+  delete normals;
 
   this._textureCoordinateBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, this._textureCoordinateBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates), gl.STATIC_DRAW);
+  delete textureCoordinates;
 
   this._textureOriginBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, this._textureOriginBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureOrigins), gl.STATIC_DRAW);
+  delete textureOrigins;
 
   this._textureSizeBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, this._textureSizeBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureSizes), gl.STATIC_DRAW);
+  delete textureSizes;
 
 };
 

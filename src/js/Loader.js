@@ -91,10 +91,13 @@ Quake2.Loader.prototype.loadModel = function (name) {
 
 Quake2.Loader.prototype._loadEntityModels = function (entities) {
   const hash = Object.create(null);
+  Quake2.Loader._WEAPON_MODELS.forEach(function (model) {
+    hash[model] = true;
+  });
   entities.filter(function (entity) {
     return entity.classname in Quake2.Entities;
   }, this).forEach(function (entity) {
-    const models = Quake2.Entities[entity.classname].MODELS.concat(Quake2.Loader._WEAPON_MODELS);
+    const models = Quake2.Entities[entity.classname].MODELS;
     models.forEach(function (model) {
       hash[model] = true;
     }, this);
@@ -106,17 +109,16 @@ Quake2.Loader.prototype._loadEntityModels = function (entities) {
 };
 
 Quake2.Loader.prototype.loadMap = function (name) {
-  var result;
   return this._loadHash({
     data: this.loadData('maps/' + name),
     colormap: this.loadImage('pics/colormap.png'),
     texture: this.loadImage('maps/' + name + '.png'),
-    normals: this.loadData('normals')
+    normals: this.loadData('normals'),
   }).then(function (response) {
-    result = response;
-    return this._loadEntityModels(response.data.entities);
-  }.bind(this)).then(function (models) {
-    result.models = models;
-    return result;
-  });
+    const entities = response.data.entities;
+    return this._loadEntityModels(entities).then(function (models) {
+      response.models = models;
+      return response;
+    });
+  }.bind(this));
 };

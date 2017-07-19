@@ -19,6 +19,11 @@ Quake2.Game = function (gl, assets) {
   this._worldProgram = new Quake2.WorldProgram(gl, assets, this.camera);
   this._modelProgram = new Quake2.ModelProgram(gl, this.camera);
 
+  this._modelFactory = new Quake2.ModelFactory(
+      gl, this._modelProgram, assets.models, assets.normals);
+
+  this.weapon = new Quake2.Weapons.Blaster(this._modelFactory);
+
   assets.data.entities.filter(function (entity) {
     return entity.classname === 'info_player_start';
   }).forEach(function (spawnPoint) {
@@ -48,6 +53,8 @@ Quake2.Game.prototype.render = function () {
 
   gl.clear(gl.DEPTH_BUFFER_BIT);
 
+  const t = Date.now();
+
   this._worldProgram.prepare();
   this._bsp.locate(this.camera.position).render();
 
@@ -55,7 +62,7 @@ Quake2.Game.prototype.render = function () {
   // TODO: render entities
 
   this._modelProgram.prepareForWeapon();
-  // TODO: render weapon
+  this.weapon.render(t);
 
   gl.flush();
 };

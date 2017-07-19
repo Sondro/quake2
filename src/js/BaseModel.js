@@ -1,9 +1,9 @@
-Quake2.BaseModel = function (gl, program, name, data, normalTable) {
+Quake2.BaseModel = function (gl, program, name, data, skins, normalTable) {
   this._gl = gl;
   this._program = program;
 
   this.name = name;
-  this.animations = new Animations(data);
+  this.animations = Quake2.BaseModel._loadAnimations(data);
   this._vertexBuffer = gl.createBuffer();
   this._normalBuffer = gl.createBuffer();
   this._textureCoordinateBuffer = gl.createBuffer();
@@ -19,7 +19,7 @@ Quake2.BaseModel = function (gl, program, name, data, normalTable) {
   }
   gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-  vertices = null;
+  delete vertices;
 
   const normals = new Float32Array(data.frames.names.length * data.triangles.vertices.length * 3);
   for (var i = 0; i < data.frames.names.length; i++) {
@@ -32,7 +32,7 @@ Quake2.BaseModel = function (gl, program, name, data, normalTable) {
   }
   gl.bindBuffer(gl.ARRAY_BUFFER, this._normalBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);
-  normals = null;
+  delete normals;
 
   const textureCoordinates = new Float32Array(data.triangles.textureCoordinates.length * 2);
   for (var i = 0; i < data.triangles.textureCoordinates.length; i++) {
@@ -42,20 +42,41 @@ Quake2.BaseModel = function (gl, program, name, data, normalTable) {
   }
   gl.bindBuffer(gl.ARRAY_BUFFER, this._textureCoordinateBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, textureCoordinates, gl.STATIC_DRAW);
-  textureCoordinates = null;
+  delete textureCoordinates;
 
   this._textures = {};
   gl.activeTexture(gl.TEXTURE2);
   for (var name in skins) {
-    if (skins.hasOwnProperty(name)) {
-      this._textures[name] = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, this._textures[name]);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, skins[name]);
-    }
+    this._textures[name] = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, this._textures[name]);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, skins[name]);
   }
 
+};
+
+
+Quake2.BaseModel._loadAnimations = function (data) {
+  const animations = Object.create(null);
+
+  data.frames.names.forEach(function (name, index) {
+    const re = /^([a-z_]+)(\d*)$/.exec(name);
+    if (re) {
+      if (!(re[1] in animations)) {
+        animations[re[1]] = Object.create(null);
+      }
+      animations[re[1]][re[2]] = index;
+    }
+  });
+
+  for (var name in animations) {
+    animations[name] = Object.keys(animations[name]).sort().map(function (key) {
+      return animations[name][key];
+    });
+  }
+
+  return animations;
 };
 
 
