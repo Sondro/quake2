@@ -1,5 +1,6 @@
-Quake2.BaseModel = function (gl, name, data, normalTable) {
+Quake2.BaseModel = function (gl, program, name, data, normalTable) {
   this._gl = gl;
+  this._program = program;
 
   this.name = name;
   this.animations = new Animations(data);
@@ -58,8 +59,9 @@ Quake2.BaseModel = function (gl, name, data, normalTable) {
 };
 
 
-Quake2.BaseModel.prototype.render = function (program, x, y, z, a, t, skin) {
+Quake2.BaseModel.prototype.render = function (x, y, z, a, i, j, t, skin) {
   const gl = this._gl;
+  const program = this._program;
 
   gl.uniform3f(program.locations.position, x, y, z);
   gl.uniform1f(program.locations.angle, a);
