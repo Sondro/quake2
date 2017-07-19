@@ -95,9 +95,9 @@ Quake2.Loader.prototype._loadEntityModels = function (entities) {
     hash[model] = true;
   });
   entities.filter(function (entity) {
-    return entity.classname in Quake2.Entities;
+    return entity.classname in Quake2.Entities.dictionary;
   }, this).forEach(function (entity) {
-    const models = Quake2.Entities[entity.classname].MODELS;
+    const models = Quake2.Entities.dictionary[entity.classname].MODELS;
     models.forEach(function (model) {
       hash[model] = true;
     }, this);

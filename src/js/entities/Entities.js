@@ -1,1 +1,3 @@
-Quake2.Entities = Object.create(null);
+Quake2.Entities = {
+  dictionary: Object.create(null),
+};

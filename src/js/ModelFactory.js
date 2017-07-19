@@ -6,6 +6,8 @@ Quake2.ModelFactory = function (gl, program, models, normalTable) {
       gl, program, name, models[name].data, models[name].skins, normalTable);
   }
 
+  this.models = [];
+
 };
 
 
@@ -22,7 +24,9 @@ Quake2.ModelFactory.prototype.create = function (name) {
 Quake2.ModelFactory.prototype.spawn = function (name, position, angle) {
   if (name in this._baseModels) {
     const baseModel = this._baseModels[name];
-    return new Quake2.PositionedModel(baseModel, position, angle);
+    const model = new Quake2.PositionedModel(baseModel, position, angle);
+    this.models.push(model);
+    return model;
   } else {
     throw new Error('unknown model "' + name + '"');
   }
