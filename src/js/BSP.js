@@ -32,16 +32,16 @@ Quake2.BSP.prototype._createClusters = function (gl, data) {
 };
 
 Quake2.BSP.prototype._getLeafClusters = function (data, leafIndex) {
+  const clusters = Object.create(null);
   const clusterIndex = data.leaves.cluster[leafIndex];
-  if (clusterIndex < 0) {
-    return [];
-  } else {
-    return this._pvs[clusterIndex].map(function (i) {
-      return this._clusters[i];
-    }, this).filter(function (cluster) {
-      return !!cluster;
-    });
+  if (clusterIndex >= 0) {
+    this._pvs[clusterIndex].forEach(function (i) {
+      if (this._clusters[i]) {
+        clusters[i] = this._clusters[i];
+      }
+    }, this);
   }
+  return clusters;
 };
 
 Quake2.BSP.prototype._parse = function (data, index) {
@@ -74,7 +74,8 @@ Quake2.BSP.Node.prototype.locate = function (position) {
 
 
 Quake2.BSP.Leaf = function (data, index, clusters) {
-  this.clusters = clusters;
+  this._clusterIndex = data.leaves.cluster[index];
+  this._clusters = clusters;
   // TODO: add planes
 };
 
@@ -82,8 +83,12 @@ Quake2.BSP.Leaf.prototype.locate = function () {
   return this;
 };
 
+Quake2.BSP.Leaf.prototype.views = function (leaf) {
+  return leaf._clusterIndex in this._clusters;
+};
+
 Quake2.BSP.Leaf.prototype.render = function () {
-  for (var i = 0; i < this.clusters.length; i++) {
-    this.clusters[i].render();
+  for (var i in this._clusters) {
+    this._clusters[i].render();
   }
 };

@@ -63,13 +63,16 @@ Quake2.Game.prototype.render = function () {
   const t = Date.now();
 
   this._worldProgram.prepare();
-  this._bsp.locate(this.camera.position).render();
+  const leaf = this._bsp.locate(this.camera.position);
+  leaf.render();
 
   this._modelProgram.prepareForEntities();
   for (var i = 0; i < this._modelFactory.models.length; i++) {
     const model = this._modelFactory.models[i];
-    // TODO: check visibility
-    model.render(t);
+    const modelLeaf = this._bsp.locate(model.position);
+    if (leaf.views(modelLeaf)) {
+      model.render(t);
+    }
   }
 
   this._modelProgram.prepareForWeapon();
