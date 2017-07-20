@@ -8,7 +8,7 @@ Quake2.Entities.Barrel = function (models, descriptor) {
   this._model = models.spawn('objects/barrels', position, angle);
   this._model.setSkin('models/objects/barrels/skin');
   this._model.playFrames('barrel', 0, 0);
-}
+};
 
 Quake2.Entities.Barrel.MODELS = ['objects/barrels'];
 
