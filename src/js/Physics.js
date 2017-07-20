@@ -1,21 +1,18 @@
 Quake2.Physics = {};
 
-Quake2.Physics.cross = function (u, v) {
-  const x = u.y * v.z - u.z * v.y;
-  const y = u.z * v.x - u.x * v.z;
-  const z = u.x * v.y - u.y * v.x;
+Quake2.Physics.cross = function (u, vx, vy, vz) {
+  const x = u.y * vz - u.z * vy;
+  const y = u.z * vx - u.x * vz;
+  const z = u.x * vy - u.y * vx;
   u.x = x;
   u.y = y;
   u.z = z;
 };
 
-Quake2.Physics.clip = function (position, velocity, normal) {
-  Quake2.Physics.cross(velocity, normal);
-  Quake2.Physics.cross(velocity, normal);
+Quake2.Physics.clip = function (position, velocity, nx, ny, nz) {
+  Quake2.Physics.cross(velocity, nx, ny, nz);
+  Quake2.Physics.cross(velocity, nx, ny, nz);
   velocity.x = -velocity.x;
   velocity.y = -velocity.y;
   velocity.z = -velocity.z;
-  position.x += velocity.x;
-  position.y += velocity.y;
-  position.z += velocity.z;
 };
