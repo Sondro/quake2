@@ -16,6 +16,7 @@
     "gulp-minify-html": "^1.0.6",
     "gulp-rev": "^7.1.2",
     "gulp-uglify": "^3.0.0",
-    "gulp-usemin": "^0.3.28"
+    "gulp-usemin": "^0.3.28",
+    "uglify-es": "^3.0.25"
   }
 }

@@ -1,14 +1,17 @@
 'use strict';
 
-var gulp = require('gulp');
-var usemin = require('gulp-usemin');
-var uglify = require('gulp-uglify');
-var minifyHtml = require('gulp-minify-html');
-var minifyCss = require('gulp-minify-css');
-var rev = require('gulp-rev');
-var del = require('del');
+const gulp = require('gulp');
+const usemin = require('gulp-usemin');
+const uglify = require('uglify-es');
+const composer = require('gulp-uglify/composer');
+const minifyHtml = require('gulp-minify-html');
+const minifyCss = require('gulp-minify-css');
+const rev = require('gulp-rev');
+const del = require('del');
 
-gulp.task('default', ['usemin', 'baseq2']);
+const minify = composer(uglify, console);
+
+gulp.task('default', ['usemin', 'baseq2', 'jquery']);
 
 gulp.task('usemin', function () {
   return gulp.src('src/index.html')
@@ -17,8 +20,8 @@ gulp.task('usemin', function () {
       html: [minifyHtml({
         empty: true
       })],
-      js: [uglify(), rev()],
-      inlinejs: [uglify()],
+      js: [minify(), rev()],
+      inlinejs: [minify()],
       inlinecss: [minifyCss(), 'concat']
     }))
     .pipe(gulp.dest('bin'));
@@ -27,6 +30,11 @@ gulp.task('usemin', function () {
 gulp.task('baseq2', function () {
   return gulp.src('src/baseq2/**/*')
       .pipe(gulp.dest('bin/baseq2'));
+});
+
+gulp.task('jquery', function () {
+  return gulp.src('src/js/jquery-3.2.1.min.js')
+      .pipe(gulp.dest('bin/js/'));
 });
 
 gulp.task('clean', function () {
