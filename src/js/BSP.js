@@ -11,13 +11,15 @@ Quake2.BSP.prototype._mapFaces = function (data, index) {
     const leafIndex = -(index + 1);
     const first = data.leaves.faces.first[leafIndex];
     const count = data.leaves.faces.count[leafIndex];
-    const faces = data.leaves.faces.table.slice(first, first + count);
-    const clusterIndex = data.leaves.cluster[leafIndex];
-    if (clusterIndex >= 0) {
-      if (!(clusterIndex in this._clusters)) {
-        this._clusters[clusterIndex] = [];
+    if (count > 0) {
+      const faces = data.leaves.faces.table.slice(first, first + count);
+      const clusterIndex = data.leaves.cluster[leafIndex];
+      if (clusterIndex >= 0) {
+        if (!(clusterIndex in this._clusters)) {
+          this._clusters[clusterIndex] = [];
+        }
+        this._clusters[clusterIndex] = this._clusters[clusterIndex].concat(faces);
       }
-      this._clusters[clusterIndex] = this._clusters[clusterIndex].concat(faces);
     }
   } else {
     this._mapFaces(data, data.nodes.front[index]);
