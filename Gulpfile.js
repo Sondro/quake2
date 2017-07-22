@@ -9,7 +9,13 @@ const minifyCss = require('gulp-minify-css');
 const rev = require('gulp-rev');
 const del = require('del');
 
-const minify = composer(uglify, console);
+const minify = composer({
+  minify: function (code) {
+    return uglify.minify(code, {
+      wrap: 'quake2',
+    });
+  },
+}, console);
 
 gulp.task('default', ['usemin', 'baseq2', 'jquery']);
 
@@ -20,7 +26,9 @@ gulp.task('usemin', function () {
       html: [minifyHtml({
         empty: true
       })],
-      js: [minify(), rev()],
+      js: [minify({
+        wrap: 'quake2',
+      }), rev()],
       inlinejs: [minify()],
       inlinecss: [minifyCss(), 'concat']
     }))
