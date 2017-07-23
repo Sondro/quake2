@@ -29,3 +29,7 @@ Array.prototype.unique = function () {
     return [];
   }
 };
+
+Array.prototype.flatten = function () {
+  return [].concat.apply([], this);
+};

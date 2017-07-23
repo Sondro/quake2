@@ -49,8 +49,8 @@ Quake2.BSP.prototype._getLeafClusters = function (data, leafIndex) {
 Quake2.BSP.prototype._parse = function (data, index) {
   if (index < 0) {
     const leafIndex = -(index + 1);
-    return new Quake2.BSP.Leaf(
-        data, leafIndex, this._getLeafClusters(data, leafIndex));
+    const clusters = this._getLeafClusters(data, leafIndex);
+    return new Quake2.BSP.Leaf(data, leafIndex, clusters);
   } else {
     return new Quake2.BSP.Node(this, data, index);
   }
@@ -86,6 +86,13 @@ Quake2.BSP.Leaf.prototype.locate = function () {
 
 Quake2.BSP.Leaf.prototype.views = function (leaf) {
   return leaf._clusterIndex in this._clusters;
+};
+
+Quake2.BSP.Leaf.prototype.clip = function (position, velocity) {
+  // TODO: physics.
+  position.x += velocity.x;
+  position.y += velocity.y;
+  position.z += velocity.z;
 };
 
 Quake2.BSP.Leaf.prototype.render = function () {

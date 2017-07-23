@@ -22,9 +22,7 @@ Quake2.Camera.prototype.move = function (x, z) {
   this.velocity.x = x * Math.cos(this.angle.y) + z * -Math.sin(this.angle.y) * Math.cos(this.angle.x);
   this.velocity.y = z * Math.sin(this.angle.x);
   this.velocity.z = x * Math.sin(this.angle.y) + z * Math.cos(this.angle.y) * Math.cos(this.angle.x);
-  this.position.x += this.velocity.x;
-  this.position.y += this.velocity.y;
-  this.position.z += this.velocity.z;
+  this._bsp.locate(this.position).clip(this.position, this.velocity);
 };
 
 Quake2.Camera.prototype.rotate = function (x, y) {
