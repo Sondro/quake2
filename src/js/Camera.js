@@ -1,11 +1,16 @@
 Quake2.Camera = function (bsp) {
   this._bsp = bsp;
-  this.position = {
+  this.origin = {
     x: 0,
     y: 0,
     z: 0,
   };
-  this._nextPosition = {
+  this.head = {
+    x: 0,
+    y: 0,
+    z: 0,
+  };
+  this._temp = {
     x: 0,
     y: 0,
     z: 0,
@@ -21,27 +26,43 @@ Quake2.Camera = function (bsp) {
   };
 };
 
-Quake2.Camera.HEIGHT  = 25;         // Y offset from position
+Quake2.Camera.HEIGHT  = 40;         // Y offset from position
 Quake2.Camera.WALKING_SPEED = 200;  // Quake units per second
 Quake2.Camera.RUNNING_SPEED = 320;  // Quake units per second
+
+Quake2.Camera.prototype._goingToCollide = function (position) {
+  this._temp.x = position.x + this.velocity.x;
+  this._temp.y = position.y + this.velocity.y;
+  this._temp.z = position.z + this.velocity.z;
+  const leaf = this._bsp.locate(this._temp);
+  return leaf.empty;
+};
 
 Quake2.Camera.prototype.move = function (x, z) {
   this.velocity.x = x * Math.cos(this.angle.y) + z * -Math.sin(this.angle.y) * Math.cos(this.angle.x);
   this.velocity.y = z * Math.sin(this.angle.x);
   this.velocity.z = x * Math.sin(this.angle.y) + z * Math.cos(this.angle.y) * Math.cos(this.angle.x);
-  this._nextPosition.x = this.position.x + this.velocity.x;
-  this._nextPosition.y = this.position.y + this.velocity.y;
-  this._nextPosition.z = this.position.z + this.velocity.z;
-  const leaf = this._bsp.locate(this._nextPosition);
-  if (leaf.empty) {
+  if (this._goingToCollide(this.origin) || this._goingToCollide(this.head)) {
     this.velocity.x = 0;
     this.velocity.y = 0;
     this.velocity.z = 0;
   } else {
-    this.position.x = this._nextPosition.x;
-    this.position.y = this._nextPosition.y;
-    this.position.z = this._nextPosition.z;
+    this.origin.x += this.velocity.x;
+    this.origin.y += this.velocity.y;
+    this.origin.z += this.velocity.z;
+    this.head.x += this.velocity.x;
+    this.head.y += this.velocity.y;
+    this.head.z += this.velocity.z;
   }
+};
+
+Quake2.Camera.prototype.setPosition = function (x, y, z) {
+  this.origin.x = x;
+  this.origin.y = y;
+  this.origin.z = z;
+  this.head.x = x;
+  this.head.y = y + Quake2.Camera.HEIGHT;
+  this.head.z = z;
 };
 
 Quake2.Camera.prototype.rotate = function (x, y) {

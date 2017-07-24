@@ -34,9 +34,10 @@ Quake2.Game = function (gl, assets) {
   assets.data.entities.filter(function (entity) {
     return entity.classname === 'info_player_start';
   }).forEach(function (spawnPoint) {
-    this.camera.position.x = spawnPoint.origin[0];
-    this.camera.position.y = spawnPoint.origin[1] + 25;
-    this.camera.position.z = spawnPoint.origin[2];
+    this.camera.setPosition(
+        spawnPoint.origin[0],
+        spawnPoint.origin[1],
+        spawnPoint.origin[2]);
     this.camera.angle.y = spawnPoint.angle - Math.PI / 2;
   }, this);
 
@@ -63,7 +64,7 @@ Quake2.Game.prototype.render = function () {
   const t = Date.now();
 
   this._worldProgram.prepare();
-  const leaf = this._bsp.locate(this.camera.position);
+  const leaf = this._bsp.locate(this.camera.head);
   leaf.render();
 
   this._modelProgram.prepareForEntities();

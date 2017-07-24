@@ -78,9 +78,9 @@ Quake2.WorldProgram.prototype.prepare = function () {
 
   gl.uniform3f(
       this._locations.position,
-      this._camera.position.x,
-      this._camera.position.y,
-      this._camera.position.z
+      this._camera.head.x,
+      this._camera.head.y,
+      this._camera.head.z
       );
   gl.uniform2f(
       this._locations.angle,
