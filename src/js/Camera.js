@@ -3,7 +3,12 @@ Quake2.Camera = function (bsp) {
   this.position = {
     x: 0,
     y: 0,
-    z: 0
+    z: 0,
+  };
+  this._nextPosition = {
+    x: 0,
+    y: 0,
+    z: 0,
   };
   this.velocity = {
     x: 0,
@@ -12,7 +17,7 @@ Quake2.Camera = function (bsp) {
   };
   this.angle = {
     x: 0,
-    y: 0
+    y: 0,
   };
 };
 
@@ -22,7 +27,19 @@ Quake2.Camera.prototype.move = function (x, z) {
   this.velocity.x = x * Math.cos(this.angle.y) + z * -Math.sin(this.angle.y) * Math.cos(this.angle.x);
   this.velocity.y = z * Math.sin(this.angle.x);
   this.velocity.z = x * Math.sin(this.angle.y) + z * Math.cos(this.angle.y) * Math.cos(this.angle.x);
-  this._bsp.locate(this.position).clip(this.position, this.velocity);
+  this._nextPosition.x = this.position.x + this.velocity.x;
+  this._nextPosition.y = this.position.y + this.velocity.y;
+  this._nextPosition.z = this.position.z + this.velocity.z;
+  const leaf = this._bsp.locate(this._nextPosition);
+  if (leaf.empty) {
+    this.velocity.x = 0;
+    this.velocity.y = 0;
+    this.velocity.z = 0;
+  } else {
+    this.position.x = this._nextPosition.x;
+    this.position.y = this._nextPosition.y;
+    this.position.z = this._nextPosition.z;
+  }
 };
 
 Quake2.Camera.prototype.rotate = function (x, y) {
