@@ -43,8 +43,10 @@ $(function () {
     $(window).on('resize', function () {
       resize();
     }).on('keydown', function (event) {
+      event.preventDefault();
       keys[event.which] = true;
     }).on('keyup', function (event) {
+      event.preventDefault();
       keys[event.which] = false;
     });
 

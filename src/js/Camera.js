@@ -21,7 +21,9 @@ Quake2.Camera = function (bsp) {
   };
 };
 
-Quake2.Camera.VELOCITY = 200;  // Quake units per second
+Quake2.Camera.HEIGHT  = 25;         // Y offset from position
+Quake2.Camera.WALKING_SPEED = 200;  // Quake units per second
+Quake2.Camera.RUNNING_SPEED = 320;  // Quake units per second
 
 Quake2.Camera.prototype.move = function (x, z) {
   this.velocity.x = x * Math.cos(this.angle.y) + z * -Math.sin(this.angle.y) * Math.cos(this.angle.x);
@@ -47,10 +49,18 @@ Quake2.Camera.prototype.rotate = function (x, y) {
   this.angle.y += y;
 };
 
+Quake2.Camera.prototype._getSpeed = function (keys) {
+  if (keys[16]) {  // Shift
+    return Quake2.Camera.RUNNING_SPEED;
+  } else {
+    return Quake2.Camera.WALKING_SPEED;
+  }
+};
+
 Quake2.Camera.prototype.tick = function (t0, t1, keys) {
   var x = 0;
   var z = 0;
-  const d = Quake2.Camera.VELOCITY * (t1 - t0) / 1000;
+  const d = this._getSpeed(keys) * (t1 - t0) / 1000;
   if (keys[65]) {  // A
     x -= d;
   }
