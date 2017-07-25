@@ -26,33 +26,42 @@ Quake2.Camera = function (bsp) {
   };
 };
 
-Quake2.Camera.HEIGHT  = 40;         // Y offset from position
+Quake2.Camera.HEIGHT  = 45;         // Y offset from position
 Quake2.Camera.WALKING_SPEED = 200;  // Quake units per second
 Quake2.Camera.RUNNING_SPEED = 320;  // Quake units per second
 
-Quake2.Camera.prototype._goingToCollide = function (position) {
-  this._temp.x = position.x + this.velocity.x;
-  this._temp.y = position.y + this.velocity.y;
-  this._temp.z = position.z + this.velocity.z;
+Quake2.Camera.prototype._collision = function () {
   const leaf = this._bsp.locate(this._temp);
   return leaf.empty;
 };
 
-Quake2.Camera.prototype.move = function (x, z) {
-  this.velocity.x = x * Math.cos(this.angle.y) + z * -Math.sin(this.angle.y) * Math.cos(this.angle.x);
-  this.velocity.y = z * Math.sin(this.angle.x);
-  this.velocity.z = x * Math.sin(this.angle.y) + z * Math.cos(this.angle.y) * Math.cos(this.angle.x);
-  if (this._goingToCollide(this.origin) || this._goingToCollide(this.head)) {
-    this.velocity.x = 0;
+Quake2.Camera.prototype._fall = function (dt) {
+  dt /= 1000;
+  const a = -Quake2.Physics.GRAVITY * dt;
+  const d = (this.velocity.y + a / 2) * dt;
+  this._temp.x = this.origin.x;
+  this._temp.y = this.origin.y + d;
+  this._temp.z = this.origin.z;
+  if (this._collision()) {
     this.velocity.y = 0;
-    this.velocity.z = 0;
   } else {
-    this.origin.x += this.velocity.x;
-    this.origin.y += this.velocity.y;
-    this.origin.z += this.velocity.z;
-    this.head.x += this.velocity.x;
-    this.head.y += this.velocity.y;
-    this.head.z += this.velocity.z;
+    this.velocity.y += a;
+    this.origin.y += d;
+    this.head.y = this.origin.y + Quake2.Camera.HEIGHT;
+  }
+};
+
+Quake2.Camera.prototype._move = function (x, z) {
+  const vx = x * Math.cos(this.angle.y) + z * -Math.sin(this.angle.y);
+  const vz = x * Math.sin(this.angle.y) + z * Math.cos(this.angle.y);
+  this._temp.x = this.origin.x + vx;
+  this._temp.y = this.origin.y;
+  this._temp.z = this.origin.z + vz;
+  if (!this._collision()) {
+    this.origin.x += vx;
+    this.origin.z += vz;
+    this.head.x = this.origin.x;
+    this.head.z = this.origin.z;
   }
 };
 
@@ -81,7 +90,8 @@ Quake2.Camera.prototype._getSpeed = function (keys) {
 Quake2.Camera.prototype.tick = function (t0, t1, keys) {
   var x = 0;
   var z = 0;
-  const d = this._getSpeed(keys) * (t1 - t0) / 1000;
+  const dt = t1 - t0;
+  const d = this._getSpeed(keys) * dt / 1000;
   if (keys[65]) {  // A
     x -= d;
   }
@@ -94,5 +104,6 @@ Quake2.Camera.prototype.tick = function (t0, t1, keys) {
   if (keys[87]) {  // W
     z += d;
   }
-  this.move(x, z);
+  this._fall(dt);
+  this._move(x, z);
 };

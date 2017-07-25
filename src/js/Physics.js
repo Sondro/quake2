@@ -16,3 +16,5 @@ Quake2.Physics.clip = function (position, velocity, nx, ny, nz) {
   velocity.y = -velocity.y;
   velocity.z = -velocity.z;
 };
+
+Quake2.Physics.GRAVITY = 800;  // Quake units per square second
