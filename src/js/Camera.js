@@ -53,7 +53,8 @@ Quake2.Camera.prototype._fall = function (dt) {
 };
 
 Quake2.Camera.prototype._jump = function (dt) {
-  // TODO: find the actual value of jump acceleration.
+  // TODO: find the actual value of jump acceleration. 10x gravity seems a good
+  // estimate.
   const a = Quake2.Physics.GRAVITY * 10 * dt;
   const d = (this.velocity.y + a / 2) * dt;
   this._temp.x = this.head.x;
@@ -75,10 +76,15 @@ Quake2.Camera.prototype._move = function (x, z) {
   this._temp.y = this.origin.y;
   this._temp.z = this.origin.z + vz;
   if (!this._collision()) {
-    this.origin.x += vx;
-    this.origin.z += vz;
-    this.head.x = this.origin.x;
-    this.head.z = this.origin.z;
+    this._temp.x = this.head.x + vx;
+    this._temp.y = this.head.y;
+    this._temp.z = this.head.z + vz;
+    if (!this._collision()) {
+      this.origin.x += vx;
+      this.origin.z += vz;
+      this.head.x = this.origin.x;
+      this.head.z = this.origin.z;
+    }
   }
 };
 
