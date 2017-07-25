@@ -46,11 +46,25 @@ Quake2.BSP.prototype._getLeafClusters = function (data, leafIndex) {
   return clusters;
 };
 
+Quake2.BSP.prototype._getLeafPlanes = function (data, leafIndex) {
+  const first = data.leaves.brushes.first[leafIndex];
+  const count = data.leaves.brushes.count[leafIndex];
+  const brushes = data.leaves.brushes.table.slice(first, first + count);
+  return brushes.map(function (brushIndex) {
+    const first = data.brushes.first[brushIndex];
+    const count = data.brushes.count[brushIndex];
+    return data.brushes.planes.slice(first, first + count);
+  }).flatten().unique().map(function (planeIndex) {
+    return data.planes.slice(planeIndex * 4, (planeIndex + 1) * 4);
+  }).flatten();
+};
+
 Quake2.BSP.prototype._parse = function (data, index) {
   if (index < 0) {
     const leafIndex = -(index + 1);
     const clusters = this._getLeafClusters(data, leafIndex);
-    return new Quake2.BSP.Leaf(data, leafIndex, clusters);
+    const planes = this._getLeafPlanes(data, leafIndex);
+    return new Quake2.BSP.Leaf(data, leafIndex, clusters, planes);
   } else {
     return new Quake2.BSP.Node(this, data, index);
   }
@@ -75,9 +89,10 @@ Quake2.BSP.Node.prototype.locate = function (position) {
 };
 
 
-Quake2.BSP.Leaf = function (data, index, clusters) {
+Quake2.BSP.Leaf = function (data, index, clusters, planes) {
   this._clusterIndex = data.leaves.cluster[index];
   this._clusters = clusters;
+  this._planes = planes;
   for (var i in clusters) {
     this.empty = false;
     return;
@@ -91,6 +106,27 @@ Quake2.BSP.Leaf.prototype.locate = function () {
 
 Quake2.BSP.Leaf.prototype.views = function (leaf) {
   return leaf._clusterIndex in this._clusters;
+};
+
+Quake2.BSP.Leaf.prototype.clip = function (position, offset) {
+  const x0 = position.x;
+  const y0 = position.y;
+  const z0 = position.z;
+  const x1 = position.x + offset.x;
+  const y1 = position.y + offset.y;
+  const z1 = position.z + offset.z;
+  const count = this._planes.length / 4;
+  for (var i = 0; i < count; i++) {
+    const nx = this._planes[i * 4 + 0];
+    const ny = this._planes[i * 4 + 1];
+    const nz = this._planes[i * 4 + 2];
+    const d = this._planes[i * 4 + 3];
+    const a0 = x0 * nx + y0 * ny + z0 * nz - d;
+    const a1 = x1 * nx + y1 * ny + z1 * nz - d;
+    if (a0 >= 0 && a1 < 0) {
+      Quake2.Physics.clip(offset, nx, ny, nz, d);
+    }
+  }
 };
 
 Quake2.BSP.Leaf.prototype.render = function () {

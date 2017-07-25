@@ -9,12 +9,12 @@ Quake2.Physics.cross = function (u, vx, vy, vz) {
   u.z = z;
 };
 
-Quake2.Physics.clip = function (position, velocity, nx, ny, nz) {
-  Quake2.Physics.cross(velocity, nx, ny, nz);
-  Quake2.Physics.cross(velocity, nx, ny, nz);
-  velocity.x = -velocity.x;
-  velocity.y = -velocity.y;
-  velocity.z = -velocity.z;
+Quake2.Physics.clip = function (offset, nx, ny, nz) {
+  Quake2.Physics.cross(offset, nx, ny, nz);
+  Quake2.Physics.cross(offset, nx, ny, nz);
+  offset.x = -offset.x;
+  offset.y = -offset.y;
+  offset.z = -offset.z;
 };
 
 Quake2.Physics.GRAVITY = 800;  // Quake units per square second
