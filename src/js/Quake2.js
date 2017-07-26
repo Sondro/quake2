@@ -16,8 +16,8 @@ Array.prototype.unique = function () {
     }
   });
   if (sorted.length) {
-    const result = [];
     var last = sorted[0];
+    const result = [last];
     for (var i = 1; i < sorted.length; i++) {
       if (sorted[i] !== last) {
         last = sorted[i];

@@ -26,7 +26,7 @@ Quake2.Camera = function (bsp) {
   };
 };
 
-Quake2.Camera.HEIGHT  = 45;         // Y offset from position
+Quake2.Camera.HEIGHT = 45;          // Y offset from position
 Quake2.Camera.WALKING_SPEED = 200;  // Quake units per second
 Quake2.Camera.RUNNING_SPEED = 320;  // Quake units per second
 

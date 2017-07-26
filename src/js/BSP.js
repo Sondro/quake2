@@ -90,7 +90,6 @@ Quake2.BSP.Node.prototype.locate = function (position) {
 
 
 Quake2.BSP.Leaf = function (data, index, clusters, planes) {
-  this.index = index;  // TODO: remove
   this._clusterIndex = data.leaves.cluster[index];
   this._clusters = clusters;
   this._planes = planes;
@@ -124,7 +123,7 @@ Quake2.BSP.Leaf.prototype.clip = function (position, offset) {
     const d = this._planes[i * 4 + 3];
     const a0 = x0 * nx + y0 * ny + z0 * nz - d;
     const a1 = x1 * nx + y1 * ny + z1 * nz - d;
-    if (a0 >= 0 && a1 < 0) {
+    if (a0 < 0 && a1 >= 0) {
       Quake2.Physics.clip(offset, nx, ny, nz, d);
     }
   }
