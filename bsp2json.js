@@ -89,6 +89,7 @@ module.exports = function (buffer, texturePath) {
     },
     planes: [],
     brushes: {
+      flags: [],
       first: [],
       count: [],
       planes: [],
@@ -158,6 +159,7 @@ module.exports = function (buffer, texturePath) {
   var brushCount = header.brushes.size / 12;
   for (var i = 0; i < brushCount; i++) {
     var brush = new Buffer(new Uint8Array(brushes.slice(i * 12, (i + 1) * 12)));
+    output.brushes.flags.push(brush.readUInt32LE(8));
     output.brushes.first.push(brush.readUInt32LE(0));
     output.brushes.count.push(brush.readUInt32LE(4));
   }
