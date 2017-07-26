@@ -10,7 +10,7 @@ Quake2.Camera = function (bsp) {
     y: 0,
     z: 0,
   };
-  this._temp = {
+  this.offset = {
     x: 0,
     y: 0,
     z: 0,
@@ -24,68 +24,24 @@ Quake2.Camera = function (bsp) {
     x: 0,
     y: 0,
   };
-  this.onGround = false;
 };
 
 Quake2.Camera.HEIGHT  = 45;         // Y offset from position
 Quake2.Camera.WALKING_SPEED = 200;  // Quake units per second
 Quake2.Camera.RUNNING_SPEED = 320;  // Quake units per second
 
-Quake2.Camera.prototype._collision = function () {
-  const leaf = this._bsp.locate(this._temp);
-  return leaf.empty;
-};
-
-Quake2.Camera.prototype._fall = function (dt) {
-  const a = -Quake2.Physics.GRAVITY * dt;
-  const d = (this.velocity.y + a / 2) * dt;
-  this._temp.x = this.origin.x;
-  this._temp.y = this.origin.y + d;
-  this._temp.z = this.origin.z;
-  this.onGround = this._collision();
-  if (this.onGround) {
-    this.velocity.y = 0;
-  } else {
-    this.velocity.y += a;
-    this.origin.y += d;
-    this.head.y = this.origin.y + Quake2.Camera.HEIGHT;
-  }
-};
-
-Quake2.Camera.prototype._jump = function (dt) {
-  // TODO: find the actual value of jump acceleration. 10x gravity seems a good
-  // estimate.
-  const a = Quake2.Physics.GRAVITY * 10 * dt;
-  const d = (this.velocity.y + a / 2) * dt;
-  this._temp.x = this.head.x;
-  this._temp.y = this.head.y + d;
-  this._temp.z = this.head.z;
-  if (this._collision()) {
-    this.velocity.y = 0;
-  } else {
-    this.velocity.y += a;
-    this.origin.y += d;
-    this.head.y = this.origin.y + Quake2.Camera.HEIGHT;
-  }
-};
-
-Quake2.Camera.prototype._move = function (x, z) {
-  const vx = x * Math.cos(this.angle.y) + z * -Math.sin(this.angle.y);
-  const vz = x * Math.sin(this.angle.y) + z * Math.cos(this.angle.y);
-  this._temp.x = this.origin.x + vx;
-  this._temp.y = this.origin.y;
-  this._temp.z = this.origin.z + vz;
-  if (!this._collision()) {
-    this._temp.x = this.head.x + vx;
-    this._temp.y = this.head.y;
-    this._temp.z = this.head.z + vz;
-    if (!this._collision()) {
-      this.origin.x += vx;
-      this.origin.z += vz;
-      this.head.x = this.origin.x;
-      this.head.z = this.origin.z;
-    }
-  }
+Quake2.Camera.prototype._move = function (dt, x, z) {
+  this.offset.x = x * Math.cos(this.angle.y) + z * -Math.sin(this.angle.y);
+  this.offset.y = (this.velocity.y - Quake2.Physics.GRAVITY * dt / 2) * dt;
+  this.offset.z = x * Math.sin(this.angle.y) + z * Math.cos(this.angle.y);
+  this._bsp.locate(this.origin).clip(this.origin, this.offset);
+  this.origin.x += this.offset.x;
+  this.origin.y += this.offset.y;
+  this.origin.z += this.offset.z;
+  this.head.x = this.origin.x;
+  this.head.y = this.origin.y + Quake2.Camera.HEIGHT;
+  this.head.z = this.origin.z;
+  this.velocity.y -= Quake2.Physics.GRAVITY * dt;
 };
 
 Quake2.Camera.prototype.setPosition = function (x, y, z) {
@@ -112,15 +68,6 @@ Quake2.Camera.prototype._getSpeed = function (keys) {
 
 Quake2.Camera.prototype.tick = function (t0, t1, keys) {
   const dt = (t1 - t0) / 1000;
-
-  this._fall(dt);
-
-  if (this.onGround) {
-    if (keys[32]) {  // space
-      this._jump(dt);
-    }
-  }
-
   const d = this._getSpeed(keys) * dt;
   var x = 0;
   var z = 0;
@@ -136,6 +83,5 @@ Quake2.Camera.prototype.tick = function (t0, t1, keys) {
   if (keys[87]) {  // W
     z += d;
   }
-  this._move(x, z);
-
+  this._move(dt, x, z);
 };

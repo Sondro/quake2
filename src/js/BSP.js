@@ -90,6 +90,7 @@ Quake2.BSP.Node.prototype.locate = function (position) {
 
 
 Quake2.BSP.Leaf = function (data, index, clusters, planes) {
+  this.index = index;  // TODO: remove
   this._clusterIndex = data.leaves.cluster[index];
   this._clusters = clusters;
   this._planes = planes;
