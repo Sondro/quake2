@@ -14,14 +14,14 @@ Quake2.Cluster = function (gl, data, faces) {
         data.vertices[vertexIndex * 3 + 2]);
     if (normalIndex < 0) {
       normals.push(
-          -data.planes[-normalIndex * 4],
-          -data.planes[-normalIndex * 4 + 1],
-          -data.planes[-normalIndex * 4 + 2]);
+          -data.planes.data[-normalIndex * 4],
+          -data.planes.data[-normalIndex * 4 + 1],
+          -data.planes.data[-normalIndex * 4 + 2]);
     } else {
       normals.push(
-          data.planes[normalIndex * 4],
-          data.planes[normalIndex * 4 + 1],
-          data.planes[normalIndex * 4 + 2]);
+          data.planes.data[normalIndex * 4],
+          data.planes.data[normalIndex * 4 + 1],
+          data.planes.data[normalIndex * 4 + 2]);
     }
     textureCoordinates.push(
         data.vertices[vertexIndex * 3 + 0] * data.textureInformation.u[textureIndex * 4 + 0] +

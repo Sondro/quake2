@@ -55,7 +55,7 @@ Quake2.BSP.prototype._getLeafPlanes = function (data, leafIndex) {
     const count = data.brushes.count[brushIndex];
     return data.brushes.planes.slice(first, first + count);
   }).flatten().unique().map(function (planeIndex) {
-    return data.planes.slice(planeIndex * 4, (planeIndex + 1) * 4);
+    return data.planes.data.slice(planeIndex * 4, (planeIndex + 1) * 4);
   }).flatten();
 };
 
@@ -73,7 +73,7 @@ Quake2.BSP.prototype._parse = function (data, index) {
 
 Quake2.BSP.Node = function (bsp, data, index) {
   const planeIndex = data.nodes.plane[index];
-  this.plane = data.planes.slice(planeIndex * 4, (planeIndex + 1) * 4);
+  this.plane = data.planes.data.slice(planeIndex * 4, (planeIndex + 1) * 4);
   this.front = bsp._parse(data, data.nodes.front[index]);
   this.back = bsp._parse(data, data.nodes.back[index]);
 };
