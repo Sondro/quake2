@@ -115,15 +115,14 @@ Quake2.BSP.Node.prototype.clip = function (position, offset) {
   temp.x = position.x + offset.x;
   temp.y = position.y + offset.y;
   temp.z = position.z + offset.z;
-  if (this.locate(temp).empty) {
-    var result = false;
-    while (this._clip(position, offset)) {
-      result = true;
-    }
-    return result;
-  } else {
-    return false;
+  var result = false;
+  while (this.locate(temp).empty && this._clip(position, offset)) {
+    result = true;
+    temp.x = position.x + offset.x;
+    temp.y = position.y + offset.y;
+    temp.z = position.z + offset.z;
   }
+  return result;
 };
 
 
