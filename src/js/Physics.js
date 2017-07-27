@@ -17,4 +17,5 @@ Quake2.Physics.clip = function (offset, nx, ny, nz) {
   offset.z = -offset.z;
 };
 
-Quake2.Physics.GRAVITY = 800;  // Quake units per square second
+Quake2.Physics.GRAVITY = 800;   // Quake units per square second
+Quake2.Physics.STEP_SIZE = 18;  // Maximum height of obstacles on ground

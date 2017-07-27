@@ -33,18 +33,26 @@ Quake2.Camera.RUNNING_SPEED = 320;  // Quake units per second
 
 Quake2.Camera.prototype._move = function (dt, x, y, z) {
   this.velocity.y += y;
-  this.offset.x = x * Math.cos(this.angle.y) + z * -Math.sin(this.angle.y);
+  const dx = x * Math.cos(this.angle.y) + z * -Math.sin(this.angle.y);
   const dy = (this.velocity.y - Quake2.Physics.GRAVITY * dt / 2) * dt;
-  this.offset.y = dy;
-  this.offset.z = x * Math.sin(this.angle.y) + z * Math.cos(this.angle.y);
+  const dz = x * Math.sin(this.angle.y) + z * Math.cos(this.angle.y);
+  this.offset.x = dx;
+  this.offset.y = Quake2.Physics.STEP_SIZE;
+  this.offset.z = dz;
   this._bsp.clip(this.origin, this.offset);
+  this.origin.x += this.offset.x;
+  this.origin.y += this.offset.y;
+  this.origin.z += this.offset.z;
+  this.offset.x = 0;
+  this.offset.y = dy - Quake2.Physics.STEP_SIZE;
+  this.offset.z = 0;
+  this.onGround = this._bsp.clip(this.origin, this.offset);
   this.origin.x += this.offset.x;
   this.origin.y += this.offset.y;
   this.origin.z += this.offset.z;
   this.head.x = this.origin.x;
   this.head.y = this.origin.y + Quake2.Camera.HEIGHT;
   this.head.z = this.origin.z;
-  this.onGround = this.offset.y > dy;
   if (this.onGround) {
     this.velocity.y = 0;
   } else {
