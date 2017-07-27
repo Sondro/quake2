@@ -97,12 +97,12 @@ Quake2.BSP.Node.prototype._clip = function (position, offset) {
     if (a1 < 0) {
       return this.back._clip(position, offset);
     } else {
-      Quake2.Physics.clip(offset, -nx, -ny, -nz);
+      Quake2.Physics.clip(position, offset, -nx, -ny, -nz, -d);
       return true;
     }
   } else {
     if (a1 < 0) {
-      Quake2.Physics.clip(offset, nx, ny, nz);
+      Quake2.Physics.clip(position, offset, nx, ny, nz, d);
       return true;
     } else {
       return this.front._clip(position, offset);

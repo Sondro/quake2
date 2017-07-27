@@ -1,24 +1,30 @@
 Quake2.Physics = {};
 
-Quake2.Physics.cross = function (u, vx, vy, vz) {
-  const x = u.y * vz - u.z * vy;
-  const y = u.z * vx - u.x * vz;
-  const z = u.x * vy - u.y * vx;
-  u.x = x;
-  u.y = y;
-  u.z = z;
+
+Quake2.Physics.clip = function (position, offset, nx, ny, nz, d) {
+  const x = position.x + offset.x;
+  const y = position.y + offset.y;
+  const z = position.z + offset.z;
+  const backoff = d - x * nx - y * ny - z * nz + Quake2.Physics.EPSILON;
+  offset.x += nx * backoff;
+  offset.y += ny * backoff;
+  offset.z += nz * backoff;
 };
 
-Quake2.Physics.clip = function (offset, nx, ny, nz) {
-  // TODO: Don't just cancel a component of the vector, calculate a backoff and
-  // implement a real clipping. This will need more parameters, i.e. original
-  // position and plane offset.
-  Quake2.Physics.cross(offset, nx, ny, nz);
-  Quake2.Physics.cross(offset, nx, ny, nz);
-  offset.x = -offset.x;
-  offset.y = -offset.y;
-  offset.z = -offset.z;
-};
 
-Quake2.Physics.GRAVITY = 800;   // Quake units per square second
-Quake2.Physics.STEP_SIZE = 18;  // Maximum height of obstacles on ground
+// Gravity acceleration expressed in Quake units per square second.
+Quake2.Physics.GRAVITY = 800;
+
+
+// Maximum height of obstacles on ground. Players and monsters may step onto
+// obstacles at most this high, otherwise they are blocked.
+Quake2.Physics.STEP_SIZE = 18;
+
+
+// Security distance from any wall. Crossing a wall and ending up in an empty
+// leaf has nasty consequences (the physics algorithm loops and the whole app
+// becomes unresponsive), so we want to avoid even the slightest floating point
+// error and keep some distance from the walls. We're using 0.125 rather than,
+// say, 0.1, because its exponent is integer and can be expressed nicely in
+// floating point format.
+Quake2.Physics.EPSILON = 0.125;
