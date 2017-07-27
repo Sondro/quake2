@@ -37,7 +37,7 @@ Quake2.Camera.prototype._move = function (dt, x, y, z) {
   const dy = (this.velocity.y - Quake2.Physics.GRAVITY * dt / 2) * dt;
   this.offset.y = dy;
   this.offset.z = x * Math.sin(this.angle.y) + z * Math.cos(this.angle.y);
-  this._bsp.locate(this.origin).clip(this.origin, this.offset);
+  this._bsp.clip(this.origin, this.offset);
   this.origin.x += this.offset.x;
   this.origin.y += this.offset.y;
   this.origin.z += this.offset.z;

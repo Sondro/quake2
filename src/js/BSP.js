@@ -46,25 +46,11 @@ Quake2.BSP.prototype._getLeafClusters = function (data, leafIndex) {
   return clusters;
 };
 
-Quake2.BSP.prototype._getLeafPlanes = function (data, leafIndex) {
-  const first = data.leaves.brushes.first[leafIndex];
-  const count = data.leaves.brushes.count[leafIndex];
-  const brushes = data.leaves.brushes.table.slice(first, first + count);
-  return brushes.map(function (brushIndex) {
-    const first = data.brushes.first[brushIndex];
-    const count = data.brushes.count[brushIndex];
-    return data.brushes.planes.slice(first, first + count);
-  }).flatten().unique().map(function (planeIndex) {
-    return data.planes.data.slice(planeIndex * 4, (planeIndex + 1) * 4);
-  }).flatten();
-};
-
 Quake2.BSP.prototype._parse = function (data, index) {
   if (index < 0) {
     const leafIndex = -(index + 1);
     const clusters = this._getLeafClusters(data, leafIndex);
-    const planes = this._getLeafPlanes(data, leafIndex);
-    return new Quake2.BSP.Leaf(data, leafIndex, clusters, planes);
+    return new Quake2.BSP.Leaf(data, leafIndex, clusters);
   } else {
     return new Quake2.BSP.Node(this, data, index);
   }
@@ -78,6 +64,12 @@ Quake2.BSP.Node = function (bsp, data, index) {
   this.back = bsp._parse(data, data.nodes.back[index]);
 };
 
+Quake2.BSP.Node._temp = {
+  x: 0,
+  y: 0,
+  z: 0,
+};
+
 Quake2.BSP.Node.prototype.locate = function (position) {
   const x = position.x * this.plane[0] + position.y * this.plane[1] +
       position.z * this.plane[2] - this.plane[3];
@@ -88,11 +80,56 @@ Quake2.BSP.Node.prototype.locate = function (position) {
   }
 };
 
+Quake2.BSP.Node.prototype._clip = function (position, offset) {
+  const nx = this.plane[0];
+  const ny = this.plane[1];
+  const nz = this.plane[2];
+  const d = this.plane[3];
+  const x0 = position.x;
+  const y0 = position.y;
+  const z0 = position.z;
+  const x1 = position.x + offset.x;
+  const y1 = position.y + offset.y;
+  const z1 = position.z + offset.z;
+  const a0 = x0 * nx + y0 * ny + z0 * nz - d;
+  const a1 = x1 * nx + y1 * ny + z1 * nz - d;
+  if (a0 < 0) {
+    if (a1 < 0) {
+      return this.back._clip(position, offset);
+    } else {
+      Quake2.Physics.clip(offset, -nx, -ny, -nz);
+      return true;
+    }
+  } else {
+    if (a1 < 0) {
+      Quake2.Physics.clip(offset, nx, ny, nz);
+      return true;
+    } else {
+      return this.front._clip(position, offset);
+    }
+  }
+};
 
-Quake2.BSP.Leaf = function (data, index, clusters, planes) {
+Quake2.BSP.Node.prototype.clip = function (position, offset) {
+  const temp = Quake2.BSP.Node._temp;
+  temp.x = position.x + offset.x;
+  temp.y = position.y + offset.y;
+  temp.z = position.z + offset.z;
+  if (this.locate(temp).empty) {
+    var result = false;
+    while (this._clip(position, offset)) {
+      result = true;
+    }
+    return result;
+  } else {
+    return false;
+  }
+};
+
+
+Quake2.BSP.Leaf = function (data, index, clusters) {
   this._clusterIndex = data.leaves.cluster[index];
   this._clusters = clusters;
-  this._planes = planes;
   for (var i in clusters) {
     this.empty = false;
     return;
@@ -104,29 +141,12 @@ Quake2.BSP.Leaf.prototype.locate = function () {
   return this;
 };
 
-Quake2.BSP.Leaf.prototype.views = function (leaf) {
-  return leaf._clusterIndex in this._clusters;
+Quake2.BSP.Leaf.prototype._clip = function () {
+  return false;
 };
 
-Quake2.BSP.Leaf.prototype.clip = function (position, offset) {
-  const x0 = position.x;
-  const y0 = position.y;
-  const z0 = position.z;
-  const x1 = position.x + offset.x;
-  const y1 = position.y + offset.y;
-  const z1 = position.z + offset.z;
-  const count = this._planes.length / 4;
-  for (var i = 0; i < count; i++) {
-    const nx = this._planes[i * 4 + 0];
-    const ny = this._planes[i * 4 + 1];
-    const nz = this._planes[i * 4 + 2];
-    const d = this._planes[i * 4 + 3];
-    const a0 = x0 * nx + y0 * ny + z0 * nz - d;
-    const a1 = x1 * nx + y1 * ny + z1 * nz - d;
-    if (a0 < 0 && a1 >= 0) {
-      Quake2.Physics.clip(offset, nx, ny, nz, d);
-    }
-  }
+Quake2.BSP.Leaf.prototype.views = function (leaf) {
+  return leaf._clusterIndex in this._clusters;
 };
 
 Quake2.BSP.Leaf.prototype.render = function () {
