@@ -1,6 +1,7 @@
 var readCString = require('./cstring.js');
 
 var entities = require('./entities.js');
+var unique = require('./unique.js');
 var atlas = require('./atlas.js');
 
 
@@ -241,7 +242,7 @@ module.exports = function (buffer, texturePath) {
     textureNames.push(readCString(block, 40, 32));
   }
 
-  var atlasInformation = atlas(texturePath, textureNames);
+  var atlasInformation = atlas(texturePath, unique(textureNames));
 
   for (var i = 0; i < textureInformationCount; i++) {
     var block = new Buffer(new Uint8Array(textureInformation.slice(i * 76, (i + 1) * 76)));
