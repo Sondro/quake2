@@ -1,7 +1,10 @@
+var path = require('path');
+var fs = require('fs');
+
 var readCString = require('./cstring.js');
 
 var entities = require('./entities.js');
-var unique = require('./unique.js');
+var wal2png = require('./wal2png.js');
 var atlas = require('./atlas.js');
 
 
@@ -242,7 +245,13 @@ module.exports = function (buffer, texturePath) {
     textureNames.push(readCString(block, 40, 32));
   }
 
-  var atlasInformation = atlas(texturePath, unique(textureNames));
+  var textureBuffers = Object.create(null);
+  textureNames.forEach(function (name) {
+    if (!(name in textureBuffers)) {
+      textureBuffers[name] = wal2png(fs.readFileSync(path.join(texturePath, name.toLowerCase() + '.wal')));
+    }
+  });
+  var atlasInformation = atlas(textureBuffers);
 
   for (var i = 0; i < textureInformationCount; i++) {
     var block = new Buffer(new Uint8Array(textureInformation.slice(i * 76, (i + 1) * 76)));

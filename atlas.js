@@ -1,8 +1,5 @@
-var path = require('path');
-var fs = require('fs');
 var Canvas = require('canvas');
 
-var wal2png = require('./wal2png.js');
 var nextPowerOfTwo = require('./pot.js');
 
 
@@ -53,12 +50,13 @@ Node.prototype.insert = function (width, height) {
 };
 
 
-function atlas(names, images) {
-  var area = images.reduce(function (area, image) {
-    return area + image.width * image.height;
-  }, 0);
+function atlas(images) {
+  var area = 0;
+  for (var name in images) {
+    area += images[name].width * images[name].height;
+  }
+  area = nextPowerOfTwo(area);
 
-  var area = nextPowerOfTwo(area);
   var exponent = Math.round(Math.log2(area));
   var width = Math.pow(2, Math.ceil(exponent / 2));
   var height = Math.pow(2, Math.floor(exponent / 2));
@@ -69,11 +67,12 @@ function atlas(names, images) {
   var tree = new Node(0, 0, width, height);
   var map = Object.create(null);
 
-  images.forEach(function (image, index) {
+  for (var name in images) {
+    var image = images[name];
     var leaf = tree.insert(image.width, image.height);
     if (leaf) {
       context.drawImage(image, leaf.x, leaf.y);
-      map[names[index]] = {
+      map[name] = {
         x: leaf.x,
         y: leaf.y,
         width: leaf.width,
@@ -82,7 +81,7 @@ function atlas(names, images) {
     } else {
       throw new Error();
     }
-  });
+  }
 
   return {
     atlas: canvas.toBuffer(),
@@ -91,10 +90,11 @@ function atlas(names, images) {
 }
 
 
-module.exports = function (basePath, names) {
-  return atlas(names, names.map(function (name) {
-    var image = new Canvas.Image();
-    image.src = wal2png(fs.readFileSync(path.join(basePath, name.toLowerCase() + '.wal')));
-    return image;
-  }));
+module.exports = function (buffers) {
+  var images = Object.create(null);
+  for (var name in buffers) {
+    images[name] = new Canvas.Image();
+    images[name].src = buffers[name];
+  }
+  return atlas(images);
 };
