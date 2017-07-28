@@ -80,6 +80,17 @@ Quake2.BSP.Node.prototype.locate = function (position) {
   }
 };
 
+Quake2.BSP.Node.prototype._isEmpty = function () {
+  const temp = Quake2.BSP.Node._temp;
+  const x = temp.x * this.plane[0] + temp.y * this.plane[1] +
+      temp.z * this.plane[2] - this.plane[3];
+  if (x < 0) {
+    return this.back._isEmpty();
+  } else {
+    return this.front._isEmpty();
+  }
+};
+
 Quake2.BSP.Node.prototype._clip = function (position, offset) {
   const nx = this.plane[0];
   const ny = this.plane[1];
@@ -97,13 +108,21 @@ Quake2.BSP.Node.prototype._clip = function (position, offset) {
     if (a1 < 0) {
       return this.back._clip(position, offset);
     } else {
-      Quake2.Physics.clip(position, offset, -nx, -ny, -nz, -d);
-      return true;
+      if (this._isEmpty()) {
+        Quake2.Physics.clip(position, offset, -nx, -ny, -nz, -d);
+        return true;
+      } else {
+        return false;
+      }
     }
   } else {
     if (a1 < 0) {
-      Quake2.Physics.clip(position, offset, nx, ny, nz, d);
-      return true;
+      if (this._isEmpty()) {
+        Quake2.Physics.clip(position, offset, nx, ny, nz, d);
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return this.front._clip(position, offset);
     }
@@ -116,7 +135,7 @@ Quake2.BSP.Node.prototype.clip = function (position, offset) {
   temp.y = position.y + offset.y;
   temp.z = position.z + offset.z;
   var result = false;
-  while (this.locate(temp).empty && this._clip(position, offset)) {
+  while (this._clip(position, offset)) {
     result = true;
     temp.x = position.x + offset.x;
     temp.y = position.y + offset.y;
@@ -138,6 +157,10 @@ Quake2.BSP.Leaf = function (data, index, clusters) {
 
 Quake2.BSP.Leaf.prototype.locate = function () {
   return this;
+};
+
+Quake2.BSP.Leaf.prototype._isEmpty = function () {
+  return this.empty;
 };
 
 Quake2.BSP.Leaf.prototype._clip = function () {
