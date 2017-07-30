@@ -66,6 +66,7 @@ module.exports = function (buffer, texturePath) {
   var brushes = buffer.slice(header.brushes.offset, header.brushes.offset + header.brushes.size);
   var brushPlanes = buffer.slice(header.brushSides.offset, header.brushSides.offset + header.brushSides.size);
   var leafBrushes = new Uint16Array(buffer.slice(header.leafBrushTable.offset, header.leafBrushTable.offset + header.leafBrushTable.size));
+  var lightmaps = buffer.slice(header.lightmaps.offset, header.lightmaps.offset + header.lightmaps.size);
 
   function fixVertices(vertices) {
     var vertices = Array.prototype.slice.call(vertices);
