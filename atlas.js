@@ -1,5 +1,6 @@
 var Canvas = require('canvas');
 
+var border = require('./border.js');
 var nextPowerOfTwo = require('./pot.js');
 
 
@@ -73,10 +74,10 @@ function atlas(images) {
     if (leaf) {
       context.drawImage(image, leaf.x, leaf.y);
       map[name] = {
-        x: leaf.x,
-        y: leaf.y,
-        width: leaf.width,
-        height: leaf.height
+        x: leaf.x + 1,
+        y: leaf.y + 1,
+        width: leaf.width - 1,
+        height: leaf.height - 1,
       };
     } else {
       throw new Error();
@@ -94,7 +95,7 @@ module.exports = function (buffers) {
   var images = Object.create(null);
   for (var name in buffers) {
     images[name] = new Canvas.Image();
-    images[name].src = buffers[name];
+    images[name].src = border(buffers[name]);
   }
   return atlas(images);
 };
