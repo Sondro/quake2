@@ -84,18 +84,11 @@ function atlas(images) {
       map[name] = {
         x: leaf.x + 1,
         y: leaf.y + 1,
-        width: leaf.width - 1,
-        height: leaf.height - 1,
+        width: leaf.width - 2,
+        height: leaf.height - 2,
       };
     } else {
-      console.error('no room for ' + name);
-      map[name] = {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
-      };
-      //throw new Error('no room for ' + name);
+      throw new Error('no room for ' + name);
     }
   });
 
