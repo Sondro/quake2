@@ -68,7 +68,15 @@ function atlas(images) {
   var tree = new Node(0, 0, width, height);
   var map = Object.create(null);
 
-  for (var name in images) {
+  var area = function (name) {
+    return images[name].width * images[name].height;
+  };
+
+  var names = Object.keys(images).sort(function (a, b) {
+    return area(b) - area(a);
+  });
+
+  names.forEach(function (name) {
     var image = images[name];
     var leaf = tree.insert(image.width, image.height);
     if (leaf) {
@@ -80,9 +88,16 @@ function atlas(images) {
         height: leaf.height - 1,
       };
     } else {
-      throw new Error();
+      console.error('no room for ' + name);
+      map[name] = {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+      };
+      //throw new Error('no room for ' + name);
     }
-  }
+  });
 
   return {
     atlas: canvas.toBuffer(),
