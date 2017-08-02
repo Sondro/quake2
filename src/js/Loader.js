@@ -111,7 +111,6 @@ Quake2.Loader.prototype._loadEntityModels = function (entities) {
 Quake2.Loader.prototype.loadMap = function (name) {
   return this._loadHash({
     data: this.loadData('maps/' + name),
-    colormap: this.loadImage('pics/colormap.png'),
     texture: this.loadImage('maps/' + name + '.png'),
     normals: this.loadData('normals'),
   }).then(function (response) {

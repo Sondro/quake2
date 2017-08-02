@@ -110,7 +110,6 @@ void main() {
   <script id="world-fragment-shader" type="application/glsl">
 precision mediump float;
 
-uniform sampler2D Palette;
 uniform sampler2D Atlas;
 uniform vec2 AtlasSize;
 
@@ -127,8 +126,7 @@ void main() {
   vec2 TextureCoordinates = ex_TextureOrigin + mod2(
     ex_TextureCoordinates, ex_TextureSize
     );
-  float Index = texture2D(Atlas, TextureCoordinates / AtlasSize).r;
-  vec4 Color = texture2D(Palette, vec2(Index, 0.002));
+  vec4 Color = texture2D(Atlas, TextureCoordinates / AtlasSize);
   gl_FragColor = vec4(vec3(Color) * ex_Brightness, Color.a);
 }
   </script>

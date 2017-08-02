@@ -3,20 +3,14 @@ Quake2.WorldProgram = function (gl, assets, camera) {
   this._camera = camera;
 
   this._textures = {
-    palette: gl.createTexture(),
-    atlas: gl.createTexture()
+    atlas: gl.createTexture(),
+    // TODO: lightmap
   };
 
   gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, this._textures.palette);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, assets.colormap);
-
-  gl.activeTexture(gl.TEXTURE1);
   gl.bindTexture(gl.TEXTURE_2D, this._textures.atlas);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, assets.texture);
 
   const vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -45,15 +39,13 @@ Quake2.WorldProgram = function (gl, assets, camera) {
     position: gl.getUniformLocation(this._program, 'Position'),
     angle: gl.getUniformLocation(this._program, 'Angle'),
     atlasSize: gl.getUniformLocation(this._program, 'AtlasSize'),
-    palette: gl.getUniformLocation(this._program, 'Palette'),
     atlas: gl.getUniformLocation(this._program, 'Atlas'),
   };
 
   gl.useProgram(this._program);
 
   gl.uniform2f(this._locations.atlasSize, assets.texture.width, assets.texture.height);
-  gl.uniform1i(this._locations.palette, 0);
-  gl.uniform1i(this._locations.atlas, 1);
+  gl.uniform1i(this._locations.atlas, 0);
 
 };
 
@@ -71,9 +63,6 @@ Quake2.WorldProgram.prototype.prepare = function () {
   gl.useProgram(this._program);
 
   gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, this._textures.palette);
-
-  gl.activeTexture(gl.TEXTURE1);
   gl.bindTexture(gl.TEXTURE_2D, this._textures.atlas);
 
   gl.uniform3f(
