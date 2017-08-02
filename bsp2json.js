@@ -8,7 +8,7 @@ var wal2png = require('./wal2png.js');
 var atlas = require('./atlas.js');
 
 
-module.exports = function (buffer, texturePath) {
+module.exports = function (buffer, texturePath, palette) {
   buffer = new Uint8Array(buffer).buffer;
 
   var headerArray = new Uint32Array(buffer.slice(0, 160));
@@ -249,7 +249,9 @@ module.exports = function (buffer, texturePath) {
   var textureBuffers = Object.create(null);
   textureNames.forEach(function (name) {
     if (!(name in textureBuffers)) {
-      textureBuffers[name] = wal2png(fs.readFileSync(path.join(texturePath, name.toLowerCase() + '.wal')));
+      textureBuffers[name] = wal2png(
+          fs.readFileSync(path.join(texturePath, name.toLowerCase() + '.wal')),
+          palette);
     }
   });
   var atlasInformation = atlas(textureBuffers);

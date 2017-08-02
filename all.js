@@ -10,12 +10,12 @@ var md22json = require('./md22json.js');
 var bsp2json = require('./bsp2json.js');
 var pcx2png = require('./pcx2png.js');
 
-(function convert(root, target) {
+function convert(root, target, palette) {
   fs.mkdirSync(target);
   fs.readdirSync(root).forEach(function (entry) {
     if (fs.statSync(path.join(root, entry)).isDirectory()) {
       console.log('Entering ' + entry);
-      convert(path.join(root, entry), path.join(target, entry));
+      convert(path.join(root, entry), path.join(target, entry), palette);
     } else {
       console.log(entry);
       switch (true) {
@@ -28,7 +28,8 @@ var pcx2png = require('./pcx2png.js');
       case /\.bsp$/.test(entry):
         var output = bsp2json(
             fs.readFileSync(path.join(root, entry)),
-            path.join(process.argv[2], 'textures'));
+            path.join(process.argv[2], 'textures'),
+            palette);
         fs.writeFileSync(path.join(target, entry.replace(/\.bsp$/, '.json')), output.data);
         fs.writeFileSync(path.join(target, entry.replace(/\.bsp$/, '.png')), output.atlas);
         break;
@@ -42,8 +43,14 @@ var pcx2png = require('./pcx2png.js');
       }
     }
   });
-}(process.argv[2], process.argv[3]));
+}
 
-console.log('normals.json');
-var normals = require('./normals.json');
-fs.writeFileSync(path.join(process.argv[3], 'normals.json'), JSON.stringify(normals));
+var palettePath = path.join(process.argv[2], 'pics', 'colormap.pcx');
+console.log('Loading palette "' + palettePath + '"');
+var palette = fs.readFileSync(palettePath);
+pcx2png(palette).then(function (palette) {
+  convert(process.argv[2], process.argv[3], palette);
+  console.log('normals.json');
+  var normals = require('./normals.json');
+  fs.writeFileSync(path.join(process.argv[3], 'normals.json'), JSON.stringify(normals));
+});
