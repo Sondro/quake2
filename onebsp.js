@@ -18,5 +18,8 @@ pcx2png(palette).then(function (palette) {
       path.join(process.argv[2], 'textures'), palette);
 
   fs.writeFileSync(path.join(process.argv[4], process.argv[3] + '.json'), output.data);
-  fs.writeFileSync(path.join(process.argv[4], process.argv[3] + '.png'), output.atlas);
+  fs.writeFileSync(path.join(process.argv[4], process.argv[3] + '.png'), output.atlas.texture);
+  fs.writeFileSync(path.join(process.argv[4], process.argv[3] + '.light.png'), output.atlas.lightmap);
+}).catch(function (error) {
+  throw new Error(error);
 });

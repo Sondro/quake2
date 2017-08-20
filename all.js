@@ -31,7 +31,8 @@ function convert(root, target, palette) {
             path.join(process.argv[2], 'textures'),
             palette);
         fs.writeFileSync(path.join(target, entry.replace(/\.bsp$/, '.json')), output.data);
-        fs.writeFileSync(path.join(target, entry.replace(/\.bsp$/, '.png')), output.atlas);
+        fs.writeFileSync(path.join(target, entry.replace(/\.bsp$/, '.png')), output.atlas.texture);
+        fs.writeFileSync(path.join(target, entry.replace(/\.bsp$/, '.light.png')), output.atlas.lightmap);
         break;
       case /\.pcx$/.test(entry):
         pcx2png(fs.readFileSync(path.join(root, entry))).then(function (buffer) {
@@ -53,4 +54,6 @@ pcx2png(palette).then(function (palette) {
   console.log('normals.json');
   var normals = require('./normals.json');
   fs.writeFileSync(path.join(process.argv[3], 'normals.json'), JSON.stringify(normals));
+}).catch(function (error) {
+  throw new Error(error);
 });
