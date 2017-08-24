@@ -5,13 +5,8 @@ var readCString = require('./cstring.js');
 
 var entities = require('./entities.js');
 var wal2png = require('./wal2png.js');
-var lightmap = require('./lightmap.js');
+var lightmaps = require('./lightmaps.js');
 var atlas = require('./atlas.js');
-
-
-Array.prototype.flatten = function () {
-  return [].concat.apply([], this);
-};
 
 
 module.exports = function (buffer, texturePath, palette) {
@@ -72,7 +67,7 @@ module.exports = function (buffer, texturePath, palette) {
   var brushes = buffer.slice(header.brushes.offset, header.brushes.offset + header.brushes.size);
   var brushPlanes = buffer.slice(header.brushSides.offset, header.brushSides.offset + header.brushSides.size);
   var leafBrushes = new Uint16Array(buffer.slice(header.leafBrushTable.offset, header.leafBrushTable.offset + header.leafBrushTable.size));
-  var lightmaps = buffer.slice(header.lightmaps.offset, header.lightmaps.offset + header.lightmaps.size);
+  var lightmapLump = buffer.slice(header.lightmaps.offset, header.lightmaps.offset + header.lightmaps.size);
 
   function fixVertices(vertices) {
     var vertices = Array.prototype.slice.call(vertices);
@@ -284,27 +279,7 @@ module.exports = function (buffer, texturePath, palette) {
     output.textureInformation.h.push(textureAtlas.map[textureNames[i]].height);
   }
 
-  var lightmapBuffers = Object.create(null);
-  output.faces.edges.offset.forEach(function (offset, index) {
-    var lightmapOffset = output.faces.lightmapOffset[index];
-    if (!(lightmapOffset in lightmapBuffers)) {
-      var vertices = output.faceEdges.slice(
-        offset, offset + output.faces.edges.size[index]).map(function (index) {
-          index = Math.abs(index);
-          return output.edges.slice(index * 2, (index + 1) * 2);
-        }).flatten().map(function (index) {
-          return output.vertices.slice(index * 3, (index + 1) * 3);
-        }).flatten();
-      var textureIndex = output.faces.textureInformation[index];
-      var u = output.textureInformation.u.slice(textureIndex * 4, (textureIndex + 1) * 4);
-      var v = output.textureInformation.v.slice(textureIndex * 4, (textureIndex + 1) * 4);
-      var buffer = lightmaps.slice(lightmapOffset);
-      lightmapBuffers[lightmapOffset] = lightmap(vertices, u, v, buffer);
-    }
-  });
-
-  // TODO: don't add borders to lightmaps
-  var lightmapAtlas = atlas(lightmapBuffers);
+  var lightmapAtlas = lightmaps(output, lightmapLump);
 
   return {
     data: JSON.stringify(output),
