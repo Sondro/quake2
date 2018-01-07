@@ -2,9 +2,30 @@ $(function () {
   const canvas = document.getElementById('canvas');
   const gl = canvas.getContext('webgl');
 
-  const loader = new Quake2.Loader();
+  const loadMap = function () {
+    const hash = Object.create(null);
+    window.location.search
+        .replace(/^\?/, '')
+        .split('&')
+        .forEach(function (parameter) {
+          const index = parameter.indexOf('=');
+          if (index < 0) {
+            hash[decodeURIComponent(parameter)] = true;
+          } else {
+            const key = decodeURIComponent(parameter.slice(0, index));
+            const value = decodeURIComponent(parameter.slice(index + 1));
+            hash[key] = value;
+          }
+        });
+    const loader = new Quake2.Loader();
+    if ('map' in hash) {
+      return loader.loadMap(hash.map);
+    } else {
+      return loader.loadMap('base1');
+    }
+  };
 
-  loader.loadMap('base1').then(function (assets) {
+  loadMap().then(function (assets) {
     const game = new Quake2.Game(gl, assets);
 
     const keys = Object.create(null);
