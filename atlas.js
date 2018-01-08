@@ -94,7 +94,7 @@ function atlas(images) {
 
   return {
     atlas: canvas.toBuffer(),
-    map: map
+    map: map,
   };
 }
 
