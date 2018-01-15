@@ -42,8 +42,8 @@ module.exports = function (data, lightmaps) {
           return data.vertices.slice(index * 3, (index + 1) * 3);
         }).flatten();
       var textureIndex = data.faces.textureInformation[index];
-      var u = data.textureInformation.texture.u.slice(textureIndex * 4, (textureIndex + 1) * 4);
-      var v = data.textureInformation.texture.v.slice(textureIndex * 4, (textureIndex + 1) * 4);
+      var u = data.textureInformation.u.slice(textureIndex * 4, (textureIndex + 1) * 4);
+      var v = data.textureInformation.v.slice(textureIndex * 4, (textureIndex + 1) * 4);
       var buffer = lightmaps.slice(lightmapOffset);
       buffers[lightmapOffset] = lightmap(vertices, u, v, buffer);
     }

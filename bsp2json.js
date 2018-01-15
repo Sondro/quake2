@@ -92,7 +92,12 @@ module.exports = function (buffer, texturePath, palette) {
       },
       planes: [],
       textureInformation: [],
-      lightmapOffset: [],
+      lightmap: {
+        x: [],
+        y: [],
+        w: [],
+        h: [],
+      },
     },
     planes: {
       data: [],
@@ -134,22 +139,12 @@ module.exports = function (buffer, texturePath, palette) {
     },
     visibility: [],
     textureInformation: {
-      texture: {
-        u: [],
-        v: [],
-        x: [],
-        y: [],
-        w: [],
-        h: [],
-      },
-      lightmap: {
-        u: [],
-        v: [],
-        x: [],
-        y: [],
-        w: [],
-        h: [],
-      },
+      u: [],
+      v: [],
+      x: [],
+      y: [],
+      w: [],
+      h: [],
     },
   };
 
@@ -271,27 +266,32 @@ module.exports = function (buffer, texturePath, palette) {
 
   for (var i = 0; i < textureInformationCount; i++) {
     var block = new Buffer(new Uint8Array(textureInformation.slice(i * 76, (i + 1) * 76)));
-    output.textureInformation.texture.u.push(
+    output.textureInformation.u.push(
         block.readFloatLE(0),
         block.readFloatLE(8),
         block.readFloatLE(4),
         block.readFloatLE(12)
         );
-    output.textureInformation.texture.v.push(
+    output.textureInformation.v.push(
         block.readFloatLE(16),
         block.readFloatLE(24),
         block.readFloatLE(20),
         block.readFloatLE(28)
         );
-    output.textureInformation.texture.x.push(textureAtlas.map[textureNames[i]].x);
-    output.textureInformation.texture.y.push(textureAtlas.map[textureNames[i]].y);
-    output.textureInformation.texture.w.push(textureAtlas.map[textureNames[i]].width);
-    output.textureInformation.texture.h.push(textureAtlas.map[textureNames[i]].height);
+    output.textureInformation.x.push(textureAtlas.map[textureNames[i]].x);
+    output.textureInformation.y.push(textureAtlas.map[textureNames[i]].y);
+    output.textureInformation.w.push(textureAtlas.map[textureNames[i]].width);
+    output.textureInformation.h.push(textureAtlas.map[textureNames[i]].height);
   }
 
   var lightmapAtlas = lightmaps(output, lightmapLump);
 
-  // TODO: output.textureInformation.atlas
+  for (var i = 0; i < output.faces.count; i++) {
+    output.faces.lightmap.x.push(lightmapAtlas[i].x);
+    output.faces.lightmap.y.push(lightmapAtlas[i].y);
+    output.faces.lightmap.width.push(lightmapAtlas[i].width);
+    output.faces.lightmap.height.push(lightmapAtlas[i].height);
+  }
 
   return {
     data: JSON.stringify(output),
