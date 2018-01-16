@@ -92,12 +92,8 @@ module.exports = function (buffer, texturePath, palette) {
       },
       planes: [],
       textureInformation: [],
-      lightmap: {
-        x: [],
-        y: [],
-        w: [],
-        h: [],
-      },
+      lightmapOffset: [],  // this is temporary
+      lightmapInformation: [],
     },
     planes: {
       data: [],
@@ -141,6 +137,12 @@ module.exports = function (buffer, texturePath, palette) {
     textureInformation: {
       u: [],
       v: [],
+      x: [],
+      y: [],
+      w: [],
+      h: [],
+    },
+    lightmapInformation: {
       x: [],
       y: [],
       w: [],
@@ -285,13 +287,20 @@ module.exports = function (buffer, texturePath, palette) {
   }
 
   var lightmapAtlas = lightmaps(output, lightmapLump);
-
+  var lightmapIndex = Object.keys(lightmapAtlas.map);
+  var reverseLightmapIndex = Object.create(null);
+  lightmapIndex.forEach(function (offset, index) {
+    reverseLightmapIndex[offset] = index;
+    output.lightmapInformation.x.push(lightmapAtlas.map[offset].x);
+    output.lightmapInformation.y.push(lightmapAtlas.map[offset].y);
+    output.lightmapInformation.w.push(lightmapAtlas.map[offset].w);
+    output.lightmapInformation.h.push(lightmapAtlas.map[offset].h);
+  });
   for (var i = 0; i < output.faces.count; i++) {
-    output.faces.lightmap.x.push(lightmapAtlas[i].x);
-    output.faces.lightmap.y.push(lightmapAtlas[i].y);
-    output.faces.lightmap.width.push(lightmapAtlas[i].width);
-    output.faces.lightmap.height.push(lightmapAtlas[i].height);
+    output.faces.lightmapInformation.push(
+        reverseLightmapIndex[output.faces.lightmapOffset[i]]);
   }
+  delete output.faces.lightmapOffset;
 
   return {
     data: JSON.stringify(output),
