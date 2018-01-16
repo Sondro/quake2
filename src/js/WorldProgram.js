@@ -4,7 +4,7 @@ Quake2.WorldProgram = function (gl, assets, camera) {
 
   this._textures = {
     atlas: gl.createTexture(),
-    // TODO: lightmap
+    lightmap: gl.createTexture(),
   };
 
   gl.activeTexture(gl.TEXTURE0);
@@ -12,6 +12,12 @@ Quake2.WorldProgram = function (gl, assets, camera) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, assets.texture);
+
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, this._textures.lightmap);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, assets.lightmap);
 
   const vertexShader = gl.createShader(gl.VERTEX_SHADER);
   gl.shaderSource(vertexShader, document.getElementById('world-vertex-shader').text);
@@ -31,6 +37,8 @@ Quake2.WorldProgram = function (gl, assets, camera) {
   gl.bindAttribLocation(this._program, 2, 'in_TextureCoordinates');
   gl.bindAttribLocation(this._program, 3, 'in_TextureOrigin');
   gl.bindAttribLocation(this._program, 4, 'in_TextureSize');
+  gl.bindAttribLocation(this._program, 5, 'in_LightmapOrigin');
+  gl.bindAttribLocation(this._program, 6, 'in_LightmapSize');
   gl.linkProgram(this._program);
   console.log(gl.getProgramInfoLog(this._program));
 
@@ -40,12 +48,17 @@ Quake2.WorldProgram = function (gl, assets, camera) {
     angle: gl.getUniformLocation(this._program, 'Angle'),
     atlasSize: gl.getUniformLocation(this._program, 'AtlasSize'),
     atlas: gl.getUniformLocation(this._program, 'Atlas'),
+    lightmapSize: gl.getUniformLocation(this._program, 'LightmapSize'),
+    lightmap: gl.getUniformLocation(this._program, 'Lightmap'),
   };
 
   gl.useProgram(this._program);
 
   gl.uniform2f(this._locations.atlasSize, assets.texture.width, assets.texture.height);
   gl.uniform1i(this._locations.atlas, 0);
+
+  gl.uniform2f(this._locations.lightmapSize, assets.lightmap.width, assets.lightmap.height);
+  gl.uniform1i(this._locations.lightmap, 0);
 
 };
 
@@ -64,6 +77,9 @@ Quake2.WorldProgram.prototype.prepare = function () {
 
   gl.activeTexture(gl.TEXTURE0);
   gl.bindTexture(gl.TEXTURE_2D, this._textures.atlas);
+
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, this._textures.lightmap);
 
   gl.uniform3f(
       this._locations.position,

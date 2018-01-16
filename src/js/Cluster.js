@@ -6,8 +6,11 @@ Quake2.Cluster = function (gl, data, faces) {
   var textureCoordinates = [];
   var textureOrigins = [];
   var textureSizes = [];
+  var lightmapOrigins = [];
+  var lightmapSizes = [];
 
-  const _pushElement = function (vertexIndex, normalIndex, textureIndex) {
+  // TODO: specify faceIndex only instead of normal, texture, lightmap.
+  const _pushElement = function (vertexIndex, normalIndex, textureIndex, lightmapIndex) {
     vertices.push(
         data.vertices[vertexIndex * 3],
         data.vertices[vertexIndex * 3 + 1],
@@ -39,6 +42,12 @@ Quake2.Cluster = function (gl, data, faces) {
     textureSizes.push(
         data.textureInformation.w[textureIndex],
         data.textureInformation.h[textureIndex]);
+    lightmapOrigins.push(
+        data.lightmapInformation.x[lightmapIndex],
+        data.lightmapInformation.y[lightmapIndex]);
+    lightmapSizes.push(
+        data.lightmapInformation.w[lightmapIndex],
+        data.lightmapInformation.h[lightmapIndex]);
   };
 
   const _pushFace = function (i) {
@@ -49,14 +58,34 @@ Quake2.Cluster = function (gl, data, faces) {
       k0 = data.edges[k0 * 2];
     }
     for (var j = 1; j < data.faces.edges.size[i] - 1; j++) {
-      _pushElement(k0, data.faces.planes[i], data.faces.textureInformation[i]);
+      _pushElement(
+          k0,
+          data.faces.planes[i],
+          data.faces.textureInformation[i],
+          data.faces.lightmapInformation[i]);
       const k = data.faceEdges[data.faces.edges.offset[i] + j];
       if (k < 0) {
-        _pushElement(data.edges[-k * 2 + 1], data.faces.planes[i], data.faces.textureInformation[i]);
-        _pushElement(data.edges[-k * 2], data.faces.planes[i], data.faces.textureInformation[i]);
+        _pushElement(
+            data.edges[-k * 2 + 1],
+            data.faces.planes[i],
+            data.faces.textureInformation[i],
+            data.faces.lightmapInformation[i]);
+        _pushElement(
+            data.edges[-k * 2],
+            data.faces.planes[i],
+            data.faces.textureInformation[i],
+            data.faces.lightmapInformation[i]);
       } else {
-        _pushElement(data.edges[k * 2], data.faces.planes[i], data.faces.textureInformation[i]);
-        _pushElement(data.edges[k * 2 + 1], data.faces.planes[i], data.faces.textureInformation[i]);
+        _pushElement(
+            data.edges[k * 2],
+            data.faces.planes[i],
+            data.faces.textureInformation[i],
+            data.faces.lightmapInformation[i]);
+        _pushElement(
+            data.edges[k * 2 + 1],
+            data.faces.planes[i],
+            data.faces.textureInformation[i],
+            data.faces.lightmapInformation[i]);
       }
     }
   };
@@ -92,6 +121,16 @@ Quake2.Cluster = function (gl, data, faces) {
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureSizes), gl.STATIC_DRAW);
   delete textureSizes;
 
+  this._lightmapOriginBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, this._lightmapOriginBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lightmapOrigins), gl.STATIC_DRAW);
+  delete lightmapOrigins;
+
+  this._lightmapSizeBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, this._lightmapSizeBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lightmapSizes), gl.STATIC_DRAW);
+  delete lightmapSizes;
+
 };
 
 
@@ -112,6 +151,12 @@ Quake2.Cluster.prototype.render = function () {
 
   gl.bindBuffer(gl.ARRAY_BUFFER, this._textureSizeBuffer);
   gl.vertexAttribPointer(4, 2, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, this._lightmapOriginBuffer);
+  gl.vertexAttribPointer(5, 2, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, this._lightmapSizeBuffer);
+  gl.vertexAttribPointer(6, 2, gl.FLOAT, false, 0, 0);
 
   gl.drawArrays(gl.TRIANGLES, 0, this._size);
 };

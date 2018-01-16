@@ -67,6 +67,8 @@ attribute vec3 in_Normal;
 attribute vec2 in_TextureCoordinates;
 attribute vec2 in_TextureOrigin;
 attribute vec2 in_TextureSize;
+attribute vec2 in_LightmapOrigin;
+attribute vec2 in_LightmapSize;
 
 const float PI = acos(-1.0);
 const vec3 Light = normalize(vec3(1, 2, 3));
@@ -75,12 +77,16 @@ varying float ex_Brightness;
 varying vec2 ex_TextureCoordinates;
 varying vec2 ex_TextureOrigin;
 varying vec2 ex_TextureSize;
+varying vec2 ex_LightmapOrigin;
+varying vec2 ex_LightmapSize;
 
 void main() {
   ex_Brightness = 1.0 - abs(acos(dot(Light, in_Normal))) / PI;
   ex_TextureCoordinates = in_TextureCoordinates;
   ex_TextureOrigin = in_TextureOrigin;
   ex_TextureSize = in_TextureSize;
+  ex_LightmapOrigin = in_LightmapOrigin;
+  ex_LightmapSize = in_LightmapSize;
   vec4 Vertex = vec4(in_Vertex, 1);
   gl_Position = mat4(
     ScreenSize.z / ScreenSize.x, 0, 0, 0,
@@ -113,10 +119,15 @@ precision mediump float;
 uniform sampler2D Atlas;
 uniform vec2 AtlasSize;
 
+uniform sampler2D Lightmap;
+uniform vec2 LightmapSize;
+
 varying float ex_Brightness;
 varying vec2 ex_TextureCoordinates;
 varying vec2 ex_TextureOrigin;
 varying vec2 ex_TextureSize;
+varying vec2 ex_LightmapOrigin;
+varying vec2 ex_LightmapSize;
 
 vec2 mod2(vec2 a, vec2 b) {
   return mod(mod(a, b) + b, b);

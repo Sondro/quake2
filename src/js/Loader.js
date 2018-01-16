@@ -112,6 +112,7 @@ Quake2.Loader.prototype.loadMap = function (name) {
   return this._loadHash({
     data: this.loadData('maps/' + name),
     texture: this.loadImage('maps/' + name + '.png'),
+    lightmap: this.loadImage('maps/' + name + '.light.png'),
     normals: this.loadData('normals'),
   }).then(function (response) {
     const entities = response.data.entities;
