@@ -138,7 +138,11 @@ void main() {
     ex_TextureCoordinates, ex_TextureSize
     );
   vec4 Color = texture2D(Atlas, TextureCoordinates / AtlasSize);
-  gl_FragColor = vec4(vec3(Color) * ex_Brightness, Color.a);
+  vec2 LightmapCoordinates = ex_LightmapOrigin + mod2(
+    ex_TextureCoordinates, ex_LightmapSize
+    );
+  vec4 Light = texture2D(Lightmap, LightmapCoordinates / LightmapSize);
+  gl_FragColor = vec4(vec3(Color * Light), Color.a);
 }
   </script>
 

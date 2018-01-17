@@ -58,7 +58,7 @@ Quake2.WorldProgram = function (gl, assets, camera) {
   gl.uniform1i(this._locations.atlas, 0);
 
   gl.uniform2f(this._locations.lightmapSize, assets.lightmap.width, assets.lightmap.height);
-  gl.uniform1i(this._locations.lightmap, 0);
+  gl.uniform1i(this._locations.lightmap, 1);
 
 };
 
