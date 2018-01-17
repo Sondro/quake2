@@ -26,13 +26,17 @@ function convert(root, target, palette) {
             );
         break;
       case /\.bsp$/.test(entry):
-        var output = bsp2json(
-            fs.readFileSync(path.join(root, entry)),
-            path.join(process.argv[2], 'textures'),
-            palette);
-        fs.writeFileSync(path.join(target, entry.replace(/\.bsp$/, '.json')), output.data);
-        fs.writeFileSync(path.join(target, entry.replace(/\.bsp$/, '.png')), output.atlas.texture);
-        fs.writeFileSync(path.join(target, entry.replace(/\.bsp$/, '.light.png')), output.atlas.lightmap);
+        try {
+          var output = bsp2json(
+              fs.readFileSync(path.join(root, entry)),
+              path.join(process.argv[2], 'textures'),
+              palette);
+          fs.writeFileSync(path.join(target, entry.replace(/\.bsp$/, '.json')), output.data);
+          fs.writeFileSync(path.join(target, entry.replace(/\.bsp$/, '.png')), output.atlas.texture);
+          fs.writeFileSync(path.join(target, entry.replace(/\.bsp$/, '.light.png')), output.atlas.lightmap);
+        } catch (error) {
+          console.error(error);
+        }
         break;
       case /\.pcx$/.test(entry):
         pcx2png(fs.readFileSync(path.join(root, entry))).then(function (buffer) {
