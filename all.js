@@ -55,5 +55,5 @@ pcx2png(palette).then(function (palette) {
   var normals = require('./normals.json');
   fs.writeFileSync(path.join(process.argv[3], 'normals.json'), JSON.stringify(normals));
 }).catch(function (error) {
-  throw new Error(error);
+  console.error(error);
 });
