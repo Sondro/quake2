@@ -22,8 +22,8 @@ function lightmap(vertices, u, v, buffer) {
         vertices[i * 3 + 2] * v[2] +
         v[3]);
   }
-  var width = Math.ceil(Math.max.apply(Math, s)) - Math.floor(Math.min.apply(Math, s)) + 1;
-  var height = Math.ceil(Math.max.apply(Math, t)) - Math.floor(Math.min.apply(Math, t)) + 1;
+  var width = Math.ceil(Math.max.apply(Math, s) / 16) - Math.floor(Math.min.apply(Math, s) / 16) + 1;
+  var height = Math.ceil(Math.max.apply(Math, t) / 16) - Math.floor(Math.min.apply(Math, t) / 16) + 1;
   return lightmap2png(buffer, width, height);
 }
 
