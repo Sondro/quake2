@@ -2,7 +2,6 @@ Quake2.Cluster = function (gl, data, faces) {
   this._gl = gl;
 
   var vertices = [];
-  var normals = [];
   var textureCoordinates = [];
   var textureOrigins = [];
   var textureSizes = [];
@@ -14,18 +13,6 @@ Quake2.Cluster = function (gl, data, faces) {
         data.vertices[vertexIndex * 3],
         data.vertices[vertexIndex * 3 + 1],
         data.vertices[vertexIndex * 3 + 2]);
-    const normalIndex = data.faces.planes[faceIndex];
-    if (normalIndex < 0) {
-      normals.push(
-          -data.planes.data[-normalIndex * 4],
-          -data.planes.data[-normalIndex * 4 + 1],
-          -data.planes.data[-normalIndex * 4 + 2]);
-    } else {
-      normals.push(
-          data.planes.data[normalIndex * 4],
-          data.planes.data[normalIndex * 4 + 1],
-          data.planes.data[normalIndex * 4 + 2]);
-    }
     const textureIndex = data.faces.textureInformation[faceIndex];
     textureCoordinates.push(
         data.vertices[vertexIndex * 3 + 0] * data.textureInformation.u[textureIndex * 4 + 0] +
@@ -83,11 +70,6 @@ Quake2.Cluster = function (gl, data, faces) {
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
   delete vertices;
 
-  this._normalBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, this._normalBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
-  delete normals;
-
   this._textureCoordinateBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, this._textureCoordinateBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates), gl.STATIC_DRAW);
@@ -122,23 +104,20 @@ Quake2.Cluster.prototype.render = function () {
   gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
   gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, this._normalBuffer);
-  gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 0, 0);
-
   gl.bindBuffer(gl.ARRAY_BUFFER, this._textureCoordinateBuffer);
-  gl.vertexAttribPointer(2, 2, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 0, 0);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, this._textureOriginBuffer);
-  gl.vertexAttribPointer(3, 2, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribPointer(2, 2, gl.FLOAT, false, 0, 0);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, this._textureSizeBuffer);
-  gl.vertexAttribPointer(4, 2, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribPointer(3, 2, gl.FLOAT, false, 0, 0);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, this._lightmapOriginBuffer);
-  gl.vertexAttribPointer(5, 2, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribPointer(4, 2, gl.FLOAT, false, 0, 0);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, this._lightmapSizeBuffer);
-  gl.vertexAttribPointer(6, 2, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribPointer(5, 2, gl.FLOAT, false, 0, 0);
 
   gl.drawArrays(gl.TRIANGLES, 0, this._size);
 };
