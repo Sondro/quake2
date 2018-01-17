@@ -293,8 +293,8 @@ module.exports = function (buffer, texturePath, palette) {
     reverseLightmapIndex[offset] = index;
     output.lightmapInformation.x.push(lightmapAtlas.map[offset].x);
     output.lightmapInformation.y.push(lightmapAtlas.map[offset].y);
-    output.lightmapInformation.w.push(lightmapAtlas.map[offset].w);
-    output.lightmapInformation.h.push(lightmapAtlas.map[offset].h);
+    output.lightmapInformation.w.push(lightmapAtlas.map[offset].width);
+    output.lightmapInformation.h.push(lightmapAtlas.map[offset].height);
   });
   for (var i = 0; i < output.faces.count; i++) {
     output.faces.lightmapInformation.push(
