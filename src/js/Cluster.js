@@ -9,12 +9,12 @@ Quake2.Cluster = function (gl, data, faces) {
   var lightmapOrigins = [];
   var lightmapSizes = [];
 
-  // TODO: specify faceIndex only instead of normal, texture, lightmap.
-  const _pushElement = function (vertexIndex, normalIndex, textureIndex, lightmapIndex) {
+  const _pushElement = function (faceIndex, vertexIndex) {
     vertices.push(
         data.vertices[vertexIndex * 3],
         data.vertices[vertexIndex * 3 + 1],
         data.vertices[vertexIndex * 3 + 2]);
+    const normalIndex = data.faces.planes[faceIndex];
     if (normalIndex < 0) {
       normals.push(
           -data.planes.data[-normalIndex * 4],
@@ -26,6 +26,7 @@ Quake2.Cluster = function (gl, data, faces) {
           data.planes.data[normalIndex * 4 + 1],
           data.planes.data[normalIndex * 4 + 2]);
     }
+    const textureIndex = data.faces.textureInformation[faceIndex];
     textureCoordinates.push(
         data.vertices[vertexIndex * 3 + 0] * data.textureInformation.u[textureIndex * 4 + 0] +
         data.vertices[vertexIndex * 3 + 1] * data.textureInformation.u[textureIndex * 4 + 1] +
@@ -42,6 +43,7 @@ Quake2.Cluster = function (gl, data, faces) {
     textureSizes.push(
         data.textureInformation.w[textureIndex],
         data.textureInformation.h[textureIndex]);
+    const lightmapIndex = data.faces.lightmapInformation[faceIndex];
     lightmapOrigins.push(
         data.lightmapInformation.x[lightmapIndex],
         data.lightmapInformation.y[lightmapIndex]);
@@ -58,34 +60,14 @@ Quake2.Cluster = function (gl, data, faces) {
       k0 = data.edges[k0 * 2];
     }
     for (var j = 1; j < data.faces.edges.size[i] - 1; j++) {
-      _pushElement(
-          k0,
-          data.faces.planes[i],
-          data.faces.textureInformation[i],
-          data.faces.lightmapInformation[i]);
+      _pushElement(i, k0);
       const k = data.faceEdges[data.faces.edges.offset[i] + j];
       if (k < 0) {
-        _pushElement(
-            data.edges[-k * 2 + 1],
-            data.faces.planes[i],
-            data.faces.textureInformation[i],
-            data.faces.lightmapInformation[i]);
-        _pushElement(
-            data.edges[-k * 2],
-            data.faces.planes[i],
-            data.faces.textureInformation[i],
-            data.faces.lightmapInformation[i]);
+        _pushElement(i, data.edges[-k * 2 + 1]);
+        _pushElement(i, data.edges[-k * 2]);
       } else {
-        _pushElement(
-            data.edges[k * 2],
-            data.faces.planes[i],
-            data.faces.textureInformation[i],
-            data.faces.lightmapInformation[i]);
-        _pushElement(
-            data.edges[k * 2 + 1],
-            data.faces.planes[i],
-            data.faces.textureInformation[i],
-            data.faces.lightmapInformation[i]);
+        _pushElement(i, data.edges[k * 2]);
+        _pushElement(i, data.edges[k * 2 + 1]);
       }
     }
   };
