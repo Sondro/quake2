@@ -139,10 +139,10 @@ void main() {
     );
   vec4 Color = texture2D(Atlas, TextureCoordinates / AtlasSize);
   vec2 LightmapCoordinates = ex_LightmapOrigin + mod2(
-    ex_TextureCoordinates, ex_LightmapSize
+    ex_TextureCoordinates / 16.0, ex_LightmapSize
     );
   vec4 Light = texture2D(Lightmap, LightmapCoordinates / LightmapSize);
-  gl_FragColor = vec4(vec3(Color * Light), Color.a);
+  gl_FragColor = vec4(vec3(Color * (0.2 + Light * 0.8)), Color.a);
 }
   </script>
 
