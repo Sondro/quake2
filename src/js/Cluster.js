@@ -5,25 +5,34 @@ Quake2.Cluster = function (gl, data, faces) {
   var textureCoordinates = [];
   var textureOrigins = [];
   var textureSizes = [];
+  var lightmapCoordinates = [];
   var lightmapOrigins = [];
   var lightmapSizes = [];
 
-  const _pushElement = function (faceIndex, vertexIndex) {
+  const _getS = function (vertexIndex, textureIndex) {
+    return data.vertices[vertexIndex * 3 + 0] * data.textureInformation.u[textureIndex * 4 + 0] +
+        data.vertices[vertexIndex * 3 + 1] * data.textureInformation.u[textureIndex * 4 + 1] +
+        data.vertices[vertexIndex * 3 + 2] * data.textureInformation.u[textureIndex * 4 + 2] +
+        data.textureInformation.u[textureIndex * 4 + 3];
+  };
+
+  const _getT = function (vertexIndex, textureIndex) {
+    return data.vertices[vertexIndex * 3 + 0] * data.textureInformation.v[textureIndex * 4 + 0] +
+        data.vertices[vertexIndex * 3 + 1] * data.textureInformation.v[textureIndex * 4 + 1] +
+        data.vertices[vertexIndex * 3 + 2] * data.textureInformation.v[textureIndex * 4 + 2] +
+        data.textureInformation.v[textureIndex * 4 + 3];
+  };
+
+  const _pushElement = function (faceIndex, vertexIndex, minS, minT) {
     vertices.push(
         data.vertices[vertexIndex * 3],
         data.vertices[vertexIndex * 3 + 1],
         data.vertices[vertexIndex * 3 + 2]);
     const textureIndex = data.faces.textureInformation[faceIndex];
-    textureCoordinates.push(
-        data.vertices[vertexIndex * 3 + 0] * data.textureInformation.u[textureIndex * 4 + 0] +
-        data.vertices[vertexIndex * 3 + 1] * data.textureInformation.u[textureIndex * 4 + 1] +
-        data.vertices[vertexIndex * 3 + 2] * data.textureInformation.u[textureIndex * 4 + 2] +
-        data.textureInformation.u[textureIndex * 4 + 3]);
-    textureCoordinates.push(
-        data.vertices[vertexIndex * 3 + 0] * data.textureInformation.v[textureIndex * 4 + 0] +
-        data.vertices[vertexIndex * 3 + 1] * data.textureInformation.v[textureIndex * 4 + 1] +
-        data.vertices[vertexIndex * 3 + 2] * data.textureInformation.v[textureIndex * 4 + 2] +
-        data.textureInformation.v[textureIndex * 4 + 3]);
+    const s = _getS(vertexIndex, textureIndex);
+    const t = _getT(vertexIndex, textureIndex);
+    textureCoordinates.push(s);
+    textureCoordinates.push(t);
     textureOrigins.push(
         data.textureInformation.x[textureIndex],
         data.textureInformation.y[textureIndex]);
@@ -31,6 +40,8 @@ Quake2.Cluster = function (gl, data, faces) {
         data.textureInformation.w[textureIndex],
         data.textureInformation.h[textureIndex]);
     const lightmapIndex = data.faces.lightmapInformation[faceIndex];
+    lightmapCoordinates.push(s - Math.floor(minS));
+    lightmapCoordinates.push(t - Math.floor(minT));
     lightmapOrigins.push(
         data.lightmapInformation.x[lightmapIndex],
         data.lightmapInformation.y[lightmapIndex]);
@@ -40,21 +51,38 @@ Quake2.Cluster = function (gl, data, faces) {
   };
 
   const _pushFace = function (i) {
+    const textureIndex = data.faces.textureInformation[i];
     var k0 = data.faceEdges[data.faces.edges.offset[i]];
     if (k0 < 0) {
       k0 = data.edges[-k0 * 2 + 1];
     } else {
       k0 = data.edges[k0 * 2];
     }
+    var minS = _getS(k0, textureIndex);
+    var minT = _getT(k0, textureIndex);
     for (var j = 1; j < data.faces.edges.size[i] - 1; j++) {
-      _pushElement(i, k0);
       const k = data.faceEdges[data.faces.edges.offset[i] + j];
       if (k < 0) {
-        _pushElement(i, data.edges[-k * 2 + 1]);
-        _pushElement(i, data.edges[-k * 2]);
+        minS = Math.min(minS, _getS(-k * 2 + 1, textureIndex));
+        minT = Math.min(minT, _getT(-k * 2 + 1, textureIndex));
+        minS = Math.min(minS, _getS(-k * 2, textureIndex));
+        minT = Math.min(minT, _getT(-k * 2, textureIndex));
       } else {
-        _pushElement(i, data.edges[k * 2]);
-        _pushElement(i, data.edges[k * 2 + 1]);
+        minS = Math.min(minS, _getS(k * 2, textureIndex));
+        minT = Math.min(minT, _getT(k * 2, textureIndex));
+        minS = Math.min(minS, _getS(k * 2 + 1, textureIndex));
+        minT = Math.min(minT, _getT(k * 2 + 1, textureIndex));
+      }
+    }
+    for (var j = 1; j < data.faces.edges.size[i] - 1; j++) {
+      _pushElement(i, k0, minS, minT);
+      const k = data.faceEdges[data.faces.edges.offset[i] + j];
+      if (k < 0) {
+        _pushElement(i, data.edges[-k * 2 + 1], minS, minT);
+        _pushElement(i, data.edges[-k * 2], minS, minT);
+      } else {
+        _pushElement(i, data.edges[k * 2], minS, minT);
+        _pushElement(i, data.edges[k * 2 + 1], minS, minT);
       }
     }
   };
@@ -85,6 +113,11 @@ Quake2.Cluster = function (gl, data, faces) {
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureSizes), gl.STATIC_DRAW);
   delete textureSizes;
 
+  this._lightmapCoordinateBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, this._lightmapCoordinateBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lightmapCoordinates), gl.STATIC_DRAW);
+  delete lightmapCoordinates;
+
   this._lightmapOriginBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, this._lightmapOriginBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lightmapOrigins), gl.STATIC_DRAW);
@@ -113,11 +146,14 @@ Quake2.Cluster.prototype.render = function () {
   gl.bindBuffer(gl.ARRAY_BUFFER, this._textureSizeBuffer);
   gl.vertexAttribPointer(3, 2, gl.FLOAT, false, 0, 0);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, this._lightmapOriginBuffer);
+  gl.bindBuffer(gl.ARRAY_BUFFER, this._lightmapCoordinateBuffer);
   gl.vertexAttribPointer(4, 2, gl.FLOAT, false, 0, 0);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, this._lightmapSizeBuffer);
+  gl.bindBuffer(gl.ARRAY_BUFFER, this._lightmapOriginBuffer);
   gl.vertexAttribPointer(5, 2, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, this._lightmapSizeBuffer);
+  gl.vertexAttribPointer(6, 2, gl.FLOAT, false, 0, 0);
 
   gl.drawArrays(gl.TRIANGLES, 0, this._size);
 };

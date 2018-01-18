@@ -13,6 +13,7 @@ Quake2.Game = function (gl, assets) {
   gl.enableVertexAttribArray(3);
   gl.enableVertexAttribArray(4);
   gl.enableVertexAttribArray(5);
+  gl.enableVertexAttribArray(6);
 
   this._bsp = new Quake2.BSP(gl, assets.data);
   this.camera = new Quake2.Camera(this._bsp);

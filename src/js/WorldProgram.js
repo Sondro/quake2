@@ -36,8 +36,9 @@ Quake2.WorldProgram = function (gl, assets, camera) {
   gl.bindAttribLocation(this._program, 1, 'in_TextureCoordinates');
   gl.bindAttribLocation(this._program, 2, 'in_TextureOrigin');
   gl.bindAttribLocation(this._program, 3, 'in_TextureSize');
-  gl.bindAttribLocation(this._program, 4, 'in_LightmapOrigin');
-  gl.bindAttribLocation(this._program, 5, 'in_LightmapSize');
+  gl.bindAttribLocation(this._program, 4, 'in_LightmapCoordinates');
+  gl.bindAttribLocation(this._program, 5, 'in_LightmapOrigin');
+  gl.bindAttribLocation(this._program, 6, 'in_LightmapSize');
   gl.linkProgram(this._program);
   console.log(gl.getProgramInfoLog(this._program));
 

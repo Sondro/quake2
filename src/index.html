@@ -66,12 +66,14 @@ attribute vec3 in_Vertex;
 attribute vec2 in_TextureCoordinates;
 attribute vec2 in_TextureOrigin;
 attribute vec2 in_TextureSize;
+attribute vec2 in_LightmapCoordinates;
 attribute vec2 in_LightmapOrigin;
 attribute vec2 in_LightmapSize;
 
 varying vec2 ex_TextureCoordinates;
 varying vec2 ex_TextureOrigin;
 varying vec2 ex_TextureSize;
+varying vec2 ex_LightmapCoordinates;
 varying vec2 ex_LightmapOrigin;
 varying vec2 ex_LightmapSize;
 
@@ -79,6 +81,7 @@ void main() {
   ex_TextureCoordinates = in_TextureCoordinates;
   ex_TextureOrigin = in_TextureOrigin;
   ex_TextureSize = in_TextureSize;
+  ex_LightmapCoordinates = in_LightmapCoordinates;
   ex_LightmapOrigin = in_LightmapOrigin;
   ex_LightmapSize = in_LightmapSize;
   vec4 Vertex = vec4(in_Vertex, 1);
@@ -119,6 +122,7 @@ uniform vec2 LightmapSize;
 varying vec2 ex_TextureCoordinates;
 varying vec2 ex_TextureOrigin;
 varying vec2 ex_TextureSize;
+varying vec2 ex_LightmapCoordinates;
 varying vec2 ex_LightmapOrigin;
 varying vec2 ex_LightmapSize;
 
@@ -132,10 +136,10 @@ void main() {
     );
   vec4 Color = texture2D(Atlas, TextureCoordinates / AtlasSize);
   vec2 LightmapCoordinates = ex_LightmapOrigin + mod2(
-    ex_TextureCoordinates / 16.0, ex_LightmapSize
+    ex_LightmapCoordinates / 16.0, ex_LightmapSize
     );
   vec4 Light = texture2D(Lightmap, LightmapCoordinates / LightmapSize);
-  gl_FragColor = vec4(vec3(Color * (0.2 + Light * 0.8)), Color.a);
+  gl_FragColor = vec4(vec3(/*Color */ Light), Color.a);
 }
   </script>
 
