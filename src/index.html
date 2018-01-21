@@ -157,23 +157,11 @@ uniform vec3 ScreenSize;
 
 attribute vec3 in_PreviousVertex;
 attribute vec3 in_NextVertex;
-attribute vec3 in_PreviousNormal;
-attribute vec3 in_NextNormal;
 attribute vec2 in_TextureCoordinates;
 
-const float PI = acos(-1.0);
-const vec3 Light = normalize(vec3(1, 2, 3));
-
-varying float ex_Brightness;
 varying vec2 ex_TextureCoordinates;
 
 void main() {
-  vec3 Normal = mat3(
-    cos(Angle), 0, sin(Angle),
-    0, 1, 0,
-    -sin(Angle), 0, cos(Angle)
-  ) * mix(in_PreviousNormal, in_NextNormal, Step);
-  ex_Brightness = 1.0 - abs(acos(dot(Light, Normal))) / PI;
   ex_TextureCoordinates = in_TextureCoordinates;
   gl_Position = mat4(
     ScreenSize.z / ScreenSize.x, 0, 0, 0,
@@ -210,12 +198,10 @@ precision mediump float;
 
 uniform sampler2D Texture;
 
-varying float ex_Brightness;
 varying vec2 ex_TextureCoordinates;
 
 void main() {
-  vec4 Color = texture2D(Texture, ex_TextureCoordinates);
-  gl_FragColor = vec4(vec3(Color) * ex_Brightness, Color.a);
+  gl_FragColor = texture2D(Texture, ex_TextureCoordinates);
 }
   </script>
 

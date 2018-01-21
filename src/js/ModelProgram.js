@@ -17,9 +17,7 @@ Quake2.ModelProgram = function (gl, camera) {
   gl.attachShader(this._program, fragmentShader);
   gl.bindAttribLocation(this._program, 0, 'in_PreviousVertex');
   gl.bindAttribLocation(this._program, 1, 'in_NextVertex');
-  gl.bindAttribLocation(this._program, 2, 'in_PreviousNormal');
-  gl.bindAttribLocation(this._program, 3, 'in_NextNormal');
-  gl.bindAttribLocation(this._program, 4, 'in_TextureCoordinates');
+  gl.bindAttribLocation(this._program, 2, 'in_TextureCoordinates');
   gl.linkProgram(this._program);
   console.log(gl.getProgramInfoLog(this._program));
 

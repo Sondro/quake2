@@ -5,7 +5,6 @@ Quake2.BaseModel = function (gl, program, name, data, skins, normalTable) {
   this.name = name;
   this.animations = Quake2.BaseModel._loadAnimations(data);
   this._vertexBuffer = gl.createBuffer();
-  this._normalBuffer = gl.createBuffer();
   this._textureCoordinateBuffer = gl.createBuffer();
   this._size = data.triangles.vertices.length;
 
@@ -20,19 +19,6 @@ Quake2.BaseModel = function (gl, program, name, data, skins, normalTable) {
   gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
   delete vertices;
-
-  const normals = new Float32Array(data.frames.names.length * data.triangles.vertices.length * 3);
-  for (var i = 0; i < data.frames.names.length; i++) {
-    for (var j = 0; j < data.triangles.vertices.length; j++) {
-      const normal = normalTable[data.frames.normals[i * data.frames.vertexCount + data.triangles.vertices[j]]];
-      normals[(i * data.triangles.vertices.length + j) * 3 + 0] = normal[0];
-      normals[(i * data.triangles.vertices.length + j) * 3 + 2] = normal[1];
-      normals[(i * data.triangles.vertices.length + j) * 3 + 1] = normal[2];
-    }
-  }
-  gl.bindBuffer(gl.ARRAY_BUFFER, this._normalBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);
-  delete normals;
 
   const textureCoordinates = new Float32Array(data.triangles.textureCoordinates.length * 2);
   for (var i = 0; i < data.triangles.textureCoordinates.length; i++) {
@@ -92,12 +78,8 @@ Quake2.BaseModel.prototype.render = function (x, y, z, a, i, j, t, skin) {
   gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, this._size * 12 * i);
   gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 0, this._size * 12 * j);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, this._normalBuffer);
-  gl.vertexAttribPointer(2, 3, gl.FLOAT, false, 0, this._size * 12 * i);
-  gl.vertexAttribPointer(3, 3, gl.FLOAT, false, 0, this._size * 12 * j);
-
   gl.bindBuffer(gl.ARRAY_BUFFER, this._textureCoordinateBuffer);
-  gl.vertexAttribPointer(4, 2, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribPointer(2, 2, gl.FLOAT, false, 0, 0);
 
   gl.bindTexture(gl.TEXTURE_2D, this._textures[skin]);
 
