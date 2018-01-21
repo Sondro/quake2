@@ -40,8 +40,8 @@ Quake2.Cluster = function (gl, data, faces) {
         data.textureInformation.w[textureIndex],
         data.textureInformation.h[textureIndex]);
     const lightmapIndex = data.faces.lightmapInformation[faceIndex];
-    lightmapCoordinates.push(s - Math.floor(minS));
-    lightmapCoordinates.push(t - Math.floor(minT));
+    lightmapCoordinates.push((s - Math.floor(minS)) / 16);
+    lightmapCoordinates.push((t - Math.floor(minT)) / 16);
     lightmapOrigins.push(
         data.lightmapInformation.x[lightmapIndex],
         data.lightmapInformation.y[lightmapIndex]);
@@ -63,15 +63,15 @@ Quake2.Cluster = function (gl, data, faces) {
     for (var j = 1; j < data.faces.edges.size[i] - 1; j++) {
       const k = data.faceEdges[data.faces.edges.offset[i] + j];
       if (k < 0) {
-        minS = Math.min(minS, _getS(-k * 2 + 1, textureIndex));
-        minT = Math.min(minT, _getT(-k * 2 + 1, textureIndex));
-        minS = Math.min(minS, _getS(-k * 2, textureIndex));
-        minT = Math.min(minT, _getT(-k * 2, textureIndex));
+        minS = Math.min(minS, _getS(data.edges[-k * 2 + 1], textureIndex));
+        minT = Math.min(minT, _getT(data.edges[-k * 2 + 1], textureIndex));
+        minS = Math.min(minS, _getS(data.edges[-k * 2], textureIndex));
+        minT = Math.min(minT, _getT(data.edges[-k * 2], textureIndex));
       } else {
-        minS = Math.min(minS, _getS(k * 2, textureIndex));
-        minT = Math.min(minT, _getT(k * 2, textureIndex));
-        minS = Math.min(minS, _getS(k * 2 + 1, textureIndex));
-        minT = Math.min(minT, _getT(k * 2 + 1, textureIndex));
+        minS = Math.min(minS, _getS(data.edges[k * 2], textureIndex));
+        minT = Math.min(minT, _getT(data.edges[k * 2], textureIndex));
+        minS = Math.min(minS, _getS(data.edges[k * 2 + 1], textureIndex));
+        minT = Math.min(minT, _getT(data.edges[k * 2 + 1], textureIndex));
       }
     }
     for (var j = 1; j < data.faces.edges.size[i] - 1; j++) {
