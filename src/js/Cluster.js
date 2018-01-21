@@ -52,6 +52,10 @@ Quake2.Cluster = function (gl, data, faces) {
 
   const _pushFace = function (i) {
     const textureIndex = data.faces.textureInformation[i];
+    if (data.textureInformation.flags[textureIndex] & 4) {
+      // sky
+      return;
+    }
     var k0 = data.faceEdges[data.faces.edges.offset[i]];
     if (k0 < 0) {
       k0 = data.edges[-k0 * 2 + 1];
