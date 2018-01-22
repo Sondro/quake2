@@ -140,7 +140,7 @@ void main() {
     ex_LightmapCoordinates, ex_LightmapSize
     );
   vec4 Light = texture2D(Lightmap, LightmapCoordinates / LightmapSize);
-  gl_FragColor = vec4(vec3(Color * Light), Color.a);
+  gl_FragColor = vec4(vec3(Color * (0.2 + Light * 0.8)), Color.a);
 }
   </script>
 
