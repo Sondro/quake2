@@ -14,6 +14,7 @@
   <script src="js/Loader.js"></script>
   <script src="js/Physics.js"></script>
   <script src="js/entities/Entities.js"></script>
+  <script src="js/SkyBox.js"></script>
   <script src="js/Cluster.js"></script>
   <script src="js/PVS.js"></script>
   <script src="js/BSP.js"></script>
@@ -202,6 +203,49 @@ varying vec2 ex_TextureCoordinates;
 
 void main() {
   gl_FragColor = texture2D(Texture, ex_TextureCoordinates);
+}
+  </script>
+
+
+  <script id="skybox-vertex-shader" type="application/glsl">
+uniform vec2 Angle;
+uniform vec3 ScreenSize;
+
+attribute vec3 in_Vertex;
+
+varying vec3 ex_Vertex;
+
+void main() {
+  ex_Vertex = in_Vertex;
+  gl_Position = mat4(
+    ScreenSize.z / ScreenSize.x, 0, 0, 0,
+    0, ScreenSize.z / ScreenSize.y, 0, 0,
+    0, 0, 0, 1,
+    0, 0, 1, 1
+  ) * mat4(
+    1, 0, 0, 0,
+    0, cos(Angle.x), sin(Angle.x), 0,
+    0, -sin(Angle.x), cos(Angle.x), 0,
+    0, 0, 0, 1
+  ) * mat4(
+    cos(Angle.y), 0, -sin(Angle.y), 0,
+    0, 1, 0, 0,
+    sin(Angle.y), 0, cos(Angle.y), 0,
+    0, 0, 0, 1
+  ) * vec4(in_Vertex, 0);
+}
+  </script>
+
+
+  <script id="skybox-fragment-shader" type="application/glsl">
+precision mediump float;
+
+uniform samplerCube Texture;
+
+varying vec3 ex_Vertex;
+
+void main() {
+  gl_FragColor = textureCube(Texture, ex_Vertex);
 }
   </script>
 

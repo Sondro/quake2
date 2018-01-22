@@ -93,4 +93,11 @@ Quake2.WorldProgram.prototype.prepare = function () {
       this._camera.angle.y
       );
 
+  gl.enableVertexAttribArray(1);
+  gl.enableVertexAttribArray(2);
+  gl.enableVertexAttribArray(3);
+  gl.enableVertexAttribArray(4);
+  gl.enableVertexAttribArray(5);
+  gl.enableVertexAttribArray(6);
+
 };

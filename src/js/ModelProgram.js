@@ -62,6 +62,12 @@ Quake2.ModelProgram.prototype.prepareForEntities = function () {
       this._camera.angle.y
       );
   gl.activeTexture(gl.TEXTURE2);
+  gl.enableVertexAttribArray(1);
+  gl.enableVertexAttribArray(2);
+  gl.disableVertexAttribArray(3);
+  gl.disableVertexAttribArray(4);
+  gl.disableVertexAttribArray(5);
+  gl.disableVertexAttribArray(6);
 };
 
 

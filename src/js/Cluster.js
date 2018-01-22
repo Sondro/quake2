@@ -1,3 +1,8 @@
+Quake2.EmptyCluster = function () {};
+
+Quake2.EmptyCluster.prototype.render = function () {};
+
+
 Quake2.Cluster = function (gl, data, faces) {
   this._gl = gl;
 
@@ -96,6 +101,10 @@ Quake2.Cluster = function (gl, data, faces) {
   }
 
   this._size = vertices.length / 3;
+
+  if (!this._size) {
+    return new Quake2.EmptyCluster();
+  }
 
   this._vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);

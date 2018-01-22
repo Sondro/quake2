@@ -7,17 +7,15 @@ Quake2.Game = function (gl, assets) {
   gl.depthFunc(gl.GREATER);
   gl.enable(gl.CULL_FACE);
   gl.frontFace(gl.CW);
+
+  // All programs have at least one attribute array. Other arrays are
+  // selectively enabled or disabled by each program.
   gl.enableVertexAttribArray(0);
-  gl.enableVertexAttribArray(1);
-  gl.enableVertexAttribArray(2);
-  gl.enableVertexAttribArray(3);
-  gl.enableVertexAttribArray(4);
-  gl.enableVertexAttribArray(5);
-  gl.enableVertexAttribArray(6);
 
   this._bsp = new Quake2.BSP(gl, assets.data);
   this.camera = new Quake2.Camera(this._bsp);
 
+  this._skyBox = new Quake2.SkyBox(gl, assets, this.camera);
   this._worldProgram = new Quake2.WorldProgram(gl, assets, this.camera);
   this._modelProgram = new Quake2.ModelProgram(gl, this.camera);
 
@@ -48,6 +46,7 @@ Quake2.Game = function (gl, assets) {
 
 Quake2.Game.prototype.resize = function (width, height) {
   this._gl.viewport(0, 0, width, height);
+  this._skyBox.resizeScreen(width, height);
   this._worldProgram.resizeScreen(width, height);
   this._modelProgram.resizeScreen(width, height);
 };
@@ -61,9 +60,14 @@ Quake2.Game.prototype.tick = function (t0, t1, keys) {
 Quake2.Game.prototype.render = function () {
   const gl = this._gl;
 
-  gl.clear(gl.DEPTH_BUFFER_BIT);
-
   const t = Date.now();
+
+  gl.disable(gl.DEPTH_TEST);
+
+  this._skyBox.render();
+  
+  gl.enable(gl.DEPTH_TEST);
+  gl.clear(gl.DEPTH_BUFFER_BIT);
 
   this._worldProgram.prepare();
   const leaf = this._bsp.locate(this.camera.head);
