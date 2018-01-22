@@ -62,12 +62,9 @@ Quake2.Game.prototype.render = function () {
 
   const t = Date.now();
 
-  gl.disable(gl.DEPTH_TEST);
+  gl.clear(gl.DEPTH_BUFFER_BIT);
 
   this._skyBox.render();
-  
-  gl.enable(gl.DEPTH_TEST);
-  gl.clear(gl.DEPTH_BUFFER_BIT);
 
   this._worldProgram.prepare();
   const leaf = this._bsp.locate(this.camera.head);
