@@ -56,6 +56,17 @@ Quake2.Loader.prototype.loadImages = function (paths) {
   }, this));
 };
 
+Quake2.Loader.prototype.loadSkyBox = function (name) {
+  const hash = Object.create(null);
+  hash.back = this.loadImage('env/' + name + 'bk.png');
+  hash.down = this.loadImage('env/' + name + 'dn.png');
+  hash.front = this.loadImage('env/' + name + 'ft.png');
+  hash.left = this.loadImage('env/' + name + 'lf.png');
+  hash.right = this.loadImage('env/' + name + 'rt.png');
+  hash.up = this.loadImage('env/' + name + 'up.png');
+  return this._loadHash(hash);
+};
+
 Quake2.Loader.prototype.loadTexture = function (name) {
   return this.loadImage('textures/' + name + '.png');
 };
@@ -109,16 +120,27 @@ Quake2.Loader.prototype._loadEntityModels = function (entities) {
 };
 
 Quake2.Loader.prototype.loadMap = function (name) {
+  var data;
   return this._loadHash({
     data: this.loadData('maps/' + name),
     texture: this.loadImage('maps/' + name + '.png'),
     lightmap: this.loadImage('maps/' + name + '.light.png'),
     normals: this.loadData('normals'),
   }).then(function (response) {
-    const entities = response.data.entities;
-    return this._loadEntityModels(entities).then(function (models) {
-      response.models = models;
-      return response;
+    data = response;
+    const skyBoxNames = response.data.entities.filter(function (entity) {
+      return entity.classname === 'worldspawn';
+    }).map(function (entity) {
+      return entity.sky;
     });
-  }.bind(this));
+    const entities = response.data.entities;
+    return Promise.all([
+      skyBoxNames.length ? this.loadSkyBox(skyBoxNames[0]) : null,
+      this._loadEntityModels(entities),
+    ]);
+  }.bind(this)).then(function (response) {
+    data.skyBox = response[0];
+    data.models = response[1];
+    return data;
+  });
 };
