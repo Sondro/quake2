@@ -49,5 +49,5 @@ module.exports = function (data, lightmaps) {
     }
   });
 
-  return atlas(buffers);
+  return atlas(buffers, 'wrap');
 };

@@ -141,6 +141,7 @@ module.exports = function (buffer, texturePath, palette) {
       y: [],
       w: [],
       h: [],
+      flags: [],
     },
     lightmapInformation: {
       x: [],
@@ -264,7 +265,7 @@ module.exports = function (buffer, texturePath, palette) {
           palette);
     }
   });
-  var textureAtlas = atlas(textureBuffers);
+  var textureAtlas = atlas(textureBuffers, 'wrap');
 
   for (var i = 0; i < textureInformationCount; i++) {
     var block = new Buffer(new Uint8Array(textureInformation.slice(i * 76, (i + 1) * 76)));
@@ -284,6 +285,7 @@ module.exports = function (buffer, texturePath, palette) {
     output.textureInformation.y.push(textureAtlas.map[textureNames[i]].y);
     output.textureInformation.w.push(textureAtlas.map[textureNames[i]].width);
     output.textureInformation.h.push(textureAtlas.map[textureNames[i]].height);
+    output.textureInformation.flags.push(block.readUInt32LE(32));
   }
 
   var lightmapAtlas = lightmaps(output, lightmapLump);

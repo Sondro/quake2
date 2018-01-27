@@ -99,11 +99,11 @@ function atlas(images) {
 }
 
 
-module.exports = function (buffers) {
+module.exports = function (buffers, borderMode) {
   var images = Object.create(null);
   for (var name in buffers) {
     images[name] = new Canvas.Image();
-    images[name].src = border(buffers[name]);
+    images[name].src = border(buffers[name], borderMode);
   }
   return atlas(images);
 };
