@@ -16,6 +16,4 @@ Quake2.Entities.Parasite.MODELS = [
   'monsters/parasite/tip',
 ];
 
-Quake2.Entities.Parasite.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_parasite'] = Quake2.Entities.Parasite;

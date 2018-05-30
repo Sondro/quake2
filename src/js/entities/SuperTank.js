@@ -12,6 +12,4 @@ Quake2.Entities.SuperTank = function (models, descriptor) {
 
 Quake2.Entities.SuperTank.MODELS = ['monsters/boss1'];
 
-Quake2.Entities.SuperTank.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_supertank'] = Quake2.Entities.SuperTank;

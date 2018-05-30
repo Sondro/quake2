@@ -12,6 +12,4 @@ Quake2.Entities.Medic = function (models, descriptor) {
 
 Quake2.Entities.Medic.MODELS = ['monsters/medic'];
 
-Quake2.Entities.Medic.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_medic'] = Quake2.Entities.Medic;

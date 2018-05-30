@@ -12,6 +12,4 @@ Quake2.Entities.Boss2 = function (models, descriptor) {
 
 Quake2.Entities.Boss2.MODELS = ['monsters/boss2'];
 
-Quake2.Entities.Boss2.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_boss2'] = Quake2.Entities.Boss2;

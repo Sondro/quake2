@@ -31,7 +31,4 @@ Quake2.Entities.DeadBody = function (models, descriptor) {
 Quake2.Entities.DeadBody.MODELS = ['deadbods/dude'];
 
 
-Quake2.Entities.DeadBody.prototype.tick = function () {};
-
-
 Quake2.Entities.dictionary['misc_deadsoldier'] = Quake2.Entities.DeadBody;

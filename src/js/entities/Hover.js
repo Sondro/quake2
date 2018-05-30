@@ -12,6 +12,4 @@ Quake2.Entities.Hover = function (models, descriptor) {
 
 Quake2.Entities.Hover.MODELS = ['monsters/hover'];
 
-Quake2.Entities.Hover.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_hover'] = Quake2.Entities.Hover;

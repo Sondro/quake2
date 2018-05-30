@@ -12,6 +12,4 @@ Quake2.Entities.Berserk = function (models, descriptor) {
 
 Quake2.Entities.Berserk.MODELS = ['monsters/berserk'];
 
-Quake2.Entities.Berserk.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_berserk'] = Quake2.Entities.Berserk;

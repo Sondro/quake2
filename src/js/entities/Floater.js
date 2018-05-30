@@ -12,6 +12,4 @@ Quake2.Entities.Floater = function (models, descriptor) {
 
 Quake2.Entities.Floater.MODELS = ['monsters/float'];
 
-Quake2.Entities.Floater.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_floater'] = Quake2.Entities.Floater;

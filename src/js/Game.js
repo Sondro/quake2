@@ -31,6 +31,10 @@ Quake2.Game = function (gl, assets) {
     return new EntityClass(this._modelFactory, descriptor);
   }, this);
 
+  this.tickers = this.entities.filter(function (entity) {
+    return !!entity.tick;
+  });
+
   assets.data.entities.filter(function (entity) {
     return entity.classname === 'info_player_start';
   }).forEach(function (spawnPoint) {
@@ -53,6 +57,9 @@ Quake2.Game.prototype.resize = function (width, height) {
 
 
 Quake2.Game.prototype.tick = function (t0, t1, keys) {
+  for (var i = 0; i < this.tickers.length; i++) {
+    this.tickers[i].tick(t1);
+  }
   this.camera.tick(t0, t1, keys);
 };
 

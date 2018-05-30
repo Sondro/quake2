@@ -27,6 +27,13 @@ Quake2.AnimatedModel.prototype.playFrames = function (name, first, last) {
   };
 };
 
+Quake2.AnimatedModel.prototype.isRestarting = function (t) {
+  const elapsed = t - this._animation.startTime;
+  const frameNumber = Math.floor(elapsed / Quake2.AnimatedModel.FRAME_DURATION);
+  const frameCount = this._animation.lastFrame - this._animation.firstFrame + 1;
+  return frameNumber >= frameCount && !(frameNumber % frameCount);
+};
+
 Quake2.AnimatedModel.prototype.stop = function () {
   this._animation = null;
 };

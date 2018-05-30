@@ -12,6 +12,4 @@ Quake2.Entities.Brain = function (models, descriptor) {
 
 Quake2.Entities.Brain.MODELS = ['monsters/brain'];
 
-Quake2.Entities.Brain.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_brain'] = Quake2.Entities.Brain;

@@ -12,6 +12,4 @@ Quake2.Entities.Barrel = function (models, descriptor) {
 
 Quake2.Entities.Barrel.MODELS = ['objects/barrels'];
 
-Quake2.Entities.Barrel.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['misc_explobox'] = Quake2.Entities.Barrel;

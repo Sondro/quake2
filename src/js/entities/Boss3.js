@@ -12,8 +12,6 @@ Quake2.Entities.Jorg = function (models, descriptor) {
 
 Quake2.Entities.Jorg.MODELS = ['monsters/boss3/jorg', 'monsters/boss3/rider'];
 
-Quake2.Entities.Jorg.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_jorg'] = Quake2.Entities.Jorg;
 
 
@@ -30,7 +28,5 @@ Quake2.Entities.Rider = function (models, descriptor) {
 };
 
 Quake2.Entities.Rider.MODELS = ['monsters/boss3/rider'];
-
-Quake2.Entities.Rider.prototype.tick = function () {};
 
 Quake2.Entities.dictionary['monster_boss3_stand'] = Quake2.Entities.Rider;

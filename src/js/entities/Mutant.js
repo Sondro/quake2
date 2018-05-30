@@ -12,6 +12,4 @@ Quake2.Entities.Mutant = function (models, descriptor) {
 
 Quake2.Entities.Mutant.MODELS = ['monsters/mutant'];
 
-Quake2.Entities.Mutant.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_mutant'] = Quake2.Entities.Mutant;

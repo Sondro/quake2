@@ -148,8 +148,6 @@ Quake2.Entities.Static.MODELS = [
   'weapons/g_shotg2',
 ];
 
-Quake2.Entities.Static.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['ammo_bullets'] = Quake2.Entities.Static;
 Quake2.Entities.dictionary['ammo_cells'] = Quake2.Entities.Static;
 Quake2.Entities.dictionary['ammo_grenades'] = Quake2.Entities.Static;

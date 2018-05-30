@@ -12,6 +12,4 @@ Quake2.Entities.Chick = function (models, descriptor) {
 
 Quake2.Entities.Chick.MODELS = ['monsters/bitch'];
 
-Quake2.Entities.Chick.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_chick'] = Quake2.Entities.Chick;

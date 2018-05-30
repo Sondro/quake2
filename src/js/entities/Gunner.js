@@ -12,6 +12,4 @@ Quake2.Entities.Gunner = function (models, descriptor) {
 
 Quake2.Entities.Gunner.MODELS = ['monsters/gunner'];
 
-Quake2.Entities.Gunner.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_gunner'] = Quake2.Entities.Gunner;

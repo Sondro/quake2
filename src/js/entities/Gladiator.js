@@ -12,6 +12,4 @@ Quake2.Entities.Gladiator = function (models, descriptor) {
 
 Quake2.Entities.Gladiator.MODELS = ['monsters/gladiatr'];
 
-Quake2.Entities.Gladiator.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_gladiator'] = Quake2.Entities.Gladiator;

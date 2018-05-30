@@ -12,6 +12,4 @@ Quake2.Entities.Flyer = function (models, descriptor) {
 
 Quake2.Entities.Flyer.MODELS = ['monsters/flyer'];
 
-Quake2.Entities.Flyer.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_flyer'] = Quake2.Entities.Flyer;

@@ -12,6 +12,4 @@ Quake2.Entities.Infantry = function (models, descriptor) {
 
 Quake2.Entities.Infantry.MODELS = ['monsters/infantry'];
 
-Quake2.Entities.Infantry.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_infantry'] = Quake2.Entities.Infantry;

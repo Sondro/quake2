@@ -19,7 +19,5 @@ Quake2.Entities.Tank = function (models, descriptor) {
 
 Quake2.Entities.Tank.MODELS = ['monsters/tank'];
 
-Quake2.Entities.Tank.prototype.tick = function () {};
-
 Quake2.Entities.dictionary['monster_tank'] = Quake2.Entities.Tank;
 Quake2.Entities.dictionary['monster_tank_commander'] = Quake2.Entities.Tank;
