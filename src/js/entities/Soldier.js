@@ -21,7 +21,7 @@ Quake2.Entities.Soldier = function (models, descriptor) {
 
   // https://github.com/id-Software/Quake-2/blob/master/game/m_soldier.c#L213
   this._huh = false;
-  this._model.playFrames('stand', 0, 29);
+  this._model.playRandom('stand', 0, 29);
 };
 
 Quake2.Entities.Soldier.MODELS = ['monsters/soldier'];

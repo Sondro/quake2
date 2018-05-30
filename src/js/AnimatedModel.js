@@ -23,7 +23,16 @@ Quake2.AnimatedModel.prototype.playFrames = function (name, first, last) {
     name: name,
     firstFrame: first,
     lastFrame: last,
-    startTime: Date.now()
+    startTime: Date.now(),
+  };
+};
+
+Quake2.AnimatedModel.prototype.playRandom = function (name, first, last) {
+  this._animation = {
+    name: name,
+    firstFrame: first,
+    lastFrame: last,
+    startTime: Math.round(Math.random() * (last - first + 1) * Quake2.AnimatedModel.FRAME_DURATION),
   };
 };
 
