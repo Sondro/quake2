@@ -1,4 +1,4 @@
-$(function () {
+Quake2.start = function () {
   const canvas = document.getElementById('canvas');
   const gl = canvas.getContext('webgl');
 
@@ -78,4 +78,11 @@ $(function () {
 
   });
 
+};
+
+$(function () {
+  window.setTimeout(function () {
+    window.scrollTo(0, 1);
+    Quake2.start();
+  }, 0);
 });
