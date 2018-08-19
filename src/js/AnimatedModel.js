@@ -55,7 +55,7 @@ Quake2.AnimatedModel.prototype.render = function (x, y, z, a, t) {
     const frameCount = this._animation.lastFrame - this._animation.firstFrame + 1;
     const i = frameTable[this._animation.firstFrame + frameNumber % frameCount];
     const j = frameTable[this._animation.firstFrame + (frameNumber + 1) % frameCount];
-    const t2 = (elapsed / Quake2.AnimatedModel.FRAME_DURATION) % frameNumber;
+    const t2 = elapsed / Quake2.AnimatedModel.FRAME_DURATION - frameNumber;
     this._model.render(x, y, z, a, i, j, t2, this._skin);
   }
 };
