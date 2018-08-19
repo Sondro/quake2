@@ -7,7 +7,9 @@ Quake2.Entities.Infantry = function (models, descriptor) {
   const angle = descriptor.angle || 0;
   this._model = models.spawn('monsters/infantry', position, angle);
   this._model.setSkin('models/monsters/infantry/skin');
-  this._model.playFrames('stand', 48, 70);
+
+  // https://github.com/id-Software/Quake-2/blob/master/game/m_infantry.c#L73
+  this._model.playFrames('stand', 49, 70);
 };
 
 Quake2.Entities.Infantry.MODELS = ['monsters/infantry'];
