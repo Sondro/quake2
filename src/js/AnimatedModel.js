@@ -43,6 +43,13 @@ Quake2.AnimatedModel.prototype.isRestarting = function (t) {
   return frameNumber >= frameCount && !(frameNumber % frameCount);
 };
 
+Quake2.AnimatedModel.prototype.isAtFrame = function (t, i) {
+  const elapsed = t - this._animation.startTime;
+  const frameNumber = Math.floor(elapsed / Quake2.AnimatedModel.FRAME_DURATION);
+  const frameCount = this._animation.lastFrame - this._animation.firstFrame + 1;
+  return frameNumber % frameCount === i;
+};
+
 Quake2.AnimatedModel.prototype.stop = function () {
   this._animation = null;
 };

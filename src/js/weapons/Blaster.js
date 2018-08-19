@@ -7,7 +7,7 @@ Quake2.Weapons.Blaster = function (models) {
 
 Quake2.Weapons.Blaster.prototype.tick = function (t, keys) {
   if (this._firing) {
-    if (this._model.isRestarting(t)) {
+    if (!keys[17] && this._model.isAtFrame(t, 2)) {
       this._firing = false;
       this._model.play('idle');
     }
