@@ -30,6 +30,10 @@ Quake2.start = function () {
 
     const keys = Object.create(null);
 
+    // We store the left click flag separately because clicks can be faster than
+    // a tick cycle sometimes, but we still want to fire the weapon.
+    var leftClick = false;
+
     const resolution = 0.75;
     var dimension;
 
@@ -46,9 +50,17 @@ Quake2.start = function () {
 
     var t0 = Date.now();
     window.setInterval(function () {
+      const controlDown = keys[17];
+      if (leftClick) {
+        keys[17] = true;
+      }
       const t1 = Date.now();
       game.tick(t0, t1, keys);
       t0 = t1;
+      if (leftClick) {
+        keys[17] = controlDown;
+        leftClick = false;
+      }
     }, 33);
 
     $(canvas).on('click', function () {
@@ -69,6 +81,15 @@ Quake2.start = function () {
     }).on('keyup', function (event) {
       event.preventDefault();
       keys[event.which] = false;
+    }).on('mousedown', function (event) {
+      if (event.which === 1) {
+        leftClick = true;
+        keys[17] = true;
+      }
+    }).on('mouseup', function (event) {
+      if (event.which === 1) {
+        keys[17] = false;
+      }
     });
 
     (function render() {
