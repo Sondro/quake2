@@ -61,6 +61,7 @@ Quake2.Game.prototype.tick = function (t0, t1, keys) {
     this.tickers[i].tick(t1);
   }
   this.camera.tick(t0, t1, keys);
+  this.weapon.tick(t1, keys);
 };
 
 
