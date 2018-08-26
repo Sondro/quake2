@@ -45,6 +45,11 @@ function convert(root, target, palette) {
           throw error;
         });
         break;
+      case /\.wav$/i.test(entry):
+        fs.writeFileSync(
+            path.join(target, entry.toLowerCase()),
+            fs.readFileSync(path.join(root, entry)));
+        break;
       }
     }
   });
