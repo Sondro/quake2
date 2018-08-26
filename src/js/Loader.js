@@ -16,17 +16,21 @@ Quake2.Loader._WEAPON_MODELS = [
   'weapons/v_shotg2',
 ];
 
+Quake2.Loader.prototype._zip = function (keys, values) {
+  const result = Object.create(null);
+  keys.forEach(function (key, index) {
+    result[key] = values[index];
+  });
+  return result;
+};
+
 Quake2.Loader.prototype._loadHash = function (hash) {
   const keys = Object.keys(hash);
   return Promise.all(keys.map(function (key) {
     return Promise.resolve(hash[key]);
   })).then(function (values) {
-    const result = Object.create(null);
-    keys.forEach(function (key, index) {
-      result[key] = values[index];
-    });
-    return result;
-  });
+    return this._zip(keys, values);
+  }.bind(this));
 };
 
 Quake2.Loader.prototype.loadData = function (path) {
@@ -81,12 +85,44 @@ Quake2.Loader.prototype.loadSkins = function (names) {
   return Promise.all(names.map(function (name) {
     return this.loadImage(name + '.png');
   }, this)).then(function (images) {
-    const hash = Object.create(null);
-    names.forEach(function (name, index) {
-      hash[name] = images[index];
-    });
-    return hash;
+    return this._zip(names, images);
+  }.bind(this));
+};
+
+Quake2.Loader.prototype.loadSound = function (path) {
+  return new Promise(function (resolve, reject) {
+    const audio = new Audio('baseq2/sound/' + path + '.wav');
+    audio.oncanplaythrough = function () {
+      audio.oncanplaythrough = null;
+      audio.onerror = null;
+      resolve(audio);
+    };
+    audio.onerror = function () {
+      audio.oncanplaythrough = null;
+      audio.onerror = null;
+      reject(new Error('Failed to load ' + path + '.wav'));
+    };
+    audio.load();
   });
+};
+
+Quake2.Loader.prototype.loadSounds = function (names) {
+  return Promise.all(names.map(function (name) {
+    return this.loadSound(name);
+  }, this)).then(function (sounds) {
+    return this._zip(names, sounds);
+  }.bind(this));
+};
+
+Quake2.Loader.prototype._loadWeaponSounds = function () {
+  return this.loadSounds([
+      Quake2.Weapons.Blaster,
+      // TODO: other weapons
+  ].map(function (WeaponClass) {
+    return WeaponClass.SOUNDS.map(function (path) {
+      return 'weapons/' + path;
+    });
+  }).flatten());
 };
 
 Quake2.Loader.prototype.loadModel = function (name) {
@@ -137,10 +173,12 @@ Quake2.Loader.prototype.loadMap = function (name) {
     return Promise.all([
       skyBoxNames.length ? this.loadSkyBox(skyBoxNames[0]) : null,
       this._loadEntityModels(entities),
+      this._loadWeaponSounds(),
     ]);
   }.bind(this)).then(function (response) {
     data.skyBox = response[0];
     data.models = response[1];
+    data.sounds = response[2];
     return data;
   });
 };

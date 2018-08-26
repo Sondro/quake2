@@ -1,4 +1,6 @@
 Quake2.Game = function (gl, assets) {
+  Quake2.Sound.initialize(assets.sounds);
+
   this._gl = gl;
 
   gl.clearColor(0, 0, 0, 1);
