@@ -17,8 +17,6 @@ const minify = composer({
   },
 }, console);
 
-gulp.task('default', ['usemin', 'baseq2', 'jquery']);
-
 gulp.task('usemin', function () {
   return gulp.src('src/index.html')
     .pipe(usemin({
@@ -44,6 +42,8 @@ gulp.task('jquery', function () {
   return gulp.src('src/js/jquery-3.2.1.min.js')
       .pipe(gulp.dest('bin/js/'));
 });
+
+gulp.task('default', gulp.series(['usemin', 'baseq2', 'jquery']));
 
 gulp.task('clean', function () {
   return del(['bin']);
