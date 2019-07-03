@@ -50,6 +50,27 @@ Quake2.Game = function (gl, assets) {
     return !!entity.tick;
   });
 
+  this._targets = Object.create(null);
+  assets.data.entities.filter(function (entity) {
+    return entity.hasOwnProperty('targetname');
+  }).forEach(function (entity) {
+    if (!this._targets[entity.targetname]) {
+      this._targets[entity.targetname] = [];
+    }
+    this._targets[entity.targetname].push(entity);
+  }, this);
+
+  this._triggers = Object.create(null);
+  assets.data.entities.filter(function (entity) {
+    return /\*[0-9]+/.test(entity.model || '');
+  }).forEach(function (entity) {
+    const index = /\*([0-9]+)/.exec(entity.model)[1];
+    if (!this._triggers[index]) {
+      this._triggers[index] = [];
+    }
+    this._triggers[index].push(entity);
+  }, this);
+
   assets.data.entities.filter(function (entity) {
     return entity.classname === 'info_player_start';
   }).forEach(function (spawnPoint) {
