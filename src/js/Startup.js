@@ -97,6 +97,9 @@ Quake2.start = function () {
       window.requestAnimationFrame(render);
     }());
 
+    // Increase precision of the first tick by updating t0 as late as possible.
+    t0 = Date.now();
+
   });
 
 };
