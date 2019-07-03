@@ -1,8 +1,8 @@
-Quake2.BSP = function (gl, data, index) {
+Quake2.BSP = function (gl, data, index, pvs) {
   this._clusters = Object.create(null);
   this._mapFaces(data, index);
   this._createClusters(gl, data);
-  this._pvs = Quake2.PVS.parse(data);
+  this._pvs = pvs;
   return this._parse(data, index);
 };
 

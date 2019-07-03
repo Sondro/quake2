@@ -14,6 +14,8 @@ Quake2.Game = function (gl, assets) {
   // selectively enabled or disabled by each program.
   gl.enableVertexAttribArray(0);
 
+  const pvs = Quake2.PVS.parse(assets.data);
+
   assets.data.nodes.loaded = assets.data.nodes.plane.map(function () {
     return false;
   });
@@ -21,7 +23,7 @@ Quake2.Game = function (gl, assets) {
   this._bsps = [];
   for (var i = 0; i < assets.data.nodes.count; i++) {
     if (!assets.data.nodes.loaded[i]) {
-      this._bsps.push(new Quake2.BSP(gl, assets.data, i));
+      this._bsps.push(new Quake2.BSP(gl, assets.data, i, pvs));
     }
   }
   this._bsp = this._bsps[0];
