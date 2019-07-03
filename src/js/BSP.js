@@ -81,14 +81,13 @@ Quake2.BSP.Node.prototype.locate = function (position) {
   }
 };
 
-Quake2.BSP.Node.prototype._isEmpty = function () {
-  const temp = Quake2.BSP.Node._temp;
-  const x = temp.x * this.plane[0] + temp.y * this.plane[1] +
-      temp.z * this.plane[2] - this.plane[3];
+Quake2.BSP.Node.prototype.collides = function (position) {
+  const x = position.x * this.plane[0] + position.y * this.plane[1] +
+      position.z * this.plane[2] - this.plane[3];
   if (x < 0) {
-    return this.back._isEmpty();
+    return this.back.collides(position);
   } else {
-    return this.front._isEmpty();
+    return this.front.collides(position);
   }
 };
 
@@ -109,7 +108,7 @@ Quake2.BSP.Node.prototype._clip = function (position, offset) {
     if (a1 < d) {
       return this.back._clip(position, offset);
     } else {
-      if (this._isEmpty()) {
+      if (this.collides(Quake2.BSP.Node._temp)) {
         Quake2.Physics.clip(position, offset, -nx, -ny, -nz, -d);
         return true;
       } else {
@@ -118,7 +117,7 @@ Quake2.BSP.Node.prototype._clip = function (position, offset) {
     }
   } else {
     if (a1 < d) {
-      if (this._isEmpty()) {
+      if (this.collides(Quake2.BSP.Node._temp)) {
         Quake2.Physics.clip(position, offset, nx, ny, nz, d);
         return true;
       } else {
@@ -160,7 +159,7 @@ Quake2.BSP.Leaf.prototype.locate = function () {
   return this;
 };
 
-Quake2.BSP.Leaf.prototype._isEmpty = function () {
+Quake2.BSP.Leaf.prototype.collides = function (position) {
   return this.empty;
 };
 

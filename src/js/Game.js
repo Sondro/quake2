@@ -93,6 +93,11 @@ Quake2.Game.prototype.resize = function (width, height) {
 
 
 Quake2.Game.prototype.tick = function (t0, t1, keys) {
+  for (var i in this._triggers) {
+    if (this._bsps[i].collides(this.camera.origin)) {
+      console.dir(this._triggers[i]);
+    }
+  }
   for (var i = 0; i < this.tickers.length; i++) {
     this.tickers[i].tick(t1);
   }
