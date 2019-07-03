@@ -1,9 +1,9 @@
-Quake2.BSP = function (gl, data) {
+Quake2.BSP = function (gl, data, index) {
   this._clusters = Object.create(null);
-  this._mapFaces(data, 0);
-  this._createClusters(gl, data, 0);
+  this._mapFaces(data, index);
+  this._createClusters(gl, data);
   this._pvs = Quake2.PVS.parse(data);
-  return this._parse(data, 0);
+  return this._parse(data, index);
 };
 
 Quake2.BSP.prototype._mapFaces = function (data, index) {
@@ -58,6 +58,7 @@ Quake2.BSP.prototype._parse = function (data, index) {
 
 
 Quake2.BSP.Node = function (bsp, data, index) {
+  data.nodes.loaded[index] = true;
   const planeIndex = data.nodes.plane[index];
   this.plane = data.planes.data.slice(planeIndex * 4, (planeIndex + 1) * 4);
   this.front = bsp._parse(data, data.nodes.front[index]);

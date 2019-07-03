@@ -14,7 +14,18 @@ Quake2.Game = function (gl, assets) {
   // selectively enabled or disabled by each program.
   gl.enableVertexAttribArray(0);
 
-  this._bsp = new Quake2.BSP(gl, assets.data);
+  assets.data.nodes.loaded = assets.data.nodes.plane.map(function () {
+    return false;
+  });
+
+  this._bsps = [];
+  for (var i = 0; i < assets.data.nodes.count; i++) {
+    if (!assets.data.nodes.loaded[i]) {
+      this._bsps.push(new Quake2.BSP(gl, assets.data, i));
+    }
+  }
+  this._bsp = this._bsps[0];
+
   this.camera = new Quake2.Camera(this._bsp);
 
   this._skyBox = new Quake2.SkyBox(gl, assets, this.camera);
@@ -79,6 +90,10 @@ Quake2.Game.prototype.render = function () {
   this._worldProgram.prepare();
   const leaf = this._bsp.locate(this.camera.head);
   leaf.render();
+
+  for (var i = 1; i < this._bsps.length; i++) {
+    this._bsps[i].locate(this.camera.head).render();
+  }
 
   this._modelProgram.prepareForEntities();
   for (var i = 0; i < this._modelFactory.models.length; i++) {
