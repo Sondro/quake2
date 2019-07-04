@@ -16,8 +16,10 @@ Quake2.Sound.Pool.prototype.play = function () {
       return;
     }
   }
-  this._sounds.push(this._sounds[0].cloneNode(false));
-  this._sounds[this._sounds.length - 1].play();
+  const newSound = this._sounds[0].cloneNode(false);
+  newSound.addEventListener('ended', Quake2.Sound.Pool._resetSound);
+  this._sounds.push(newSound);
+  newSound.play();
 };
 
 Quake2.Sound._sounds = Object.create(null);
