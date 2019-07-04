@@ -1,7 +1,10 @@
 {
   "name": "quake2-tools",
   "version": "1.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "canvas": "^2.5.0",
+    "gm": "^1.23.1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/71104/quake2.git"
