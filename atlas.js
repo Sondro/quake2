@@ -1,4 +1,4 @@
-var Canvas = require('canvas');
+const { createCanvas, Image } = require('canvas');
 
 var border = require('./border.js');
 var nextPowerOfTwo = require('./pot.js');
@@ -62,7 +62,7 @@ function atlas(images) {
   var width = Math.pow(2, Math.ceil(exponent / 2));
   var height = Math.pow(2, Math.floor(exponent / 2));
 
-  var canvas = new Canvas(width, height);
+  var canvas = createCanvas(width, height);
   var context = canvas.getContext('2d');
 
   var tree = new Node(0, 0, width, height);
@@ -102,7 +102,7 @@ function atlas(images) {
 module.exports = function (buffers, borderMode) {
   var images = Object.create(null);
   for (var name in buffers) {
-    images[name] = new Canvas.Image();
+    images[name] = new Image();
     images[name].src = border(buffers[name], borderMode);
   }
   return atlas(images);

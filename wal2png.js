@@ -1,12 +1,12 @@
-var Canvas = require('canvas');
+const { createCanvas, Image } = require('canvas');
 
 
 function toImageData(buffer) {
-  var image = new Canvas.Image();
+  var image = new Image();
   image.src = buffer;
   var width = image.width;
   var height = image.height;
-  var canvas = new Canvas(width, height);
+  var canvas = createCanvas(width, height);
   var context = canvas.getContext('2d');
   context.drawImage(image, 0, 0);
   return context.getImageData(0, 0, width, height);
@@ -32,7 +32,7 @@ module.exports = function (buffer, palette) {
   var data = new Uint8Array(buffer.slice(
       header.offsets[0], header.offsets[0] + header.width * header.height));
 
-  var canvas = new Canvas(header.width, header.height);
+  var canvas = createCanvas(header.width, header.height);
   var context = canvas.getContext('2d');
   var imageData = context.createImageData(header.width, header.height);
 

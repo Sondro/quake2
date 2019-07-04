@@ -1,8 +1,8 @@
-var Canvas = require('canvas');
+const { createCanvas, Image } = require('canvas');
 
 
 function getImageData(image) {
-  var canvas = new Canvas(image.width, image.height);
+  var canvas = createCanvas(image.width, image.height);
   var context = canvas.getContext('2d');
   context.drawImage(image, 0, 0);
   return context.getImageData(0, 0, image.width, image.height);
@@ -15,14 +15,14 @@ function mod2(a, b) {
 
 
 module.exports = function (buffer, mode) {
-  var image = new Canvas.Image();
+  var image = new Image();
   image.src = buffer;
   var imageData = getImageData(image);
 
   var width = image.width;
   var height = image.height;
 
-  var canvas = new Canvas(width + 2, height + 2);
+  var canvas = createCanvas(width + 2, height + 2);
   var context = canvas.getContext('2d');
 
   var canvasData = context.createImageData(width + 2, height + 2);

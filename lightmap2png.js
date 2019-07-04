@@ -1,10 +1,10 @@
-var Canvas = require('canvas');
+const { createCanvas } = require('canvas');
 
 
 module.exports = function (buffer, width, height) {
   var data = new Uint8Array(buffer);
 
-  var canvas = new Canvas(width, height);
+  var canvas = createCanvas(width, height);
   var context = canvas.getContext('2d');
   var imageData = context.createImageData(width, height);
 
