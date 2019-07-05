@@ -304,6 +304,52 @@ module.exports = function (buffer, texturePath, palette) {
   }
   delete output.faces.lightmapOffset;
 
+  var fixClusters = function () {
+    var loaded = output.nodes.plane.map(function () {
+      return false;
+    });
+
+    var loadTree = function loadTree(index) {
+      if (index < 0) {
+        return {
+          leaf: true,
+          index: -index,
+        };
+      } else {
+        loaded[index] = true;
+        return {
+          front: loadTree(output.nodes.front[index]),
+          back: loadTree(output.nodes.back[index]),
+        };
+      }
+    };
+
+    var fix = function fix(node) {
+      if (node.front.leaf) {
+        if (node.back.leaf) {
+          output.leaves.cluster[node.back.index] = -1;
+        } else {
+          fix(node.back);
+        }
+      } else if (node.back.leaf) {
+        fix(node.front);
+      }
+    };
+
+    var trees = [];
+    for (var i = 0; i < output.nodes.count; i++) {
+      if (!loaded[i]) {
+        trees.push(loadTree(i));
+      }
+    }
+
+    trees.forEach(function (tree) {
+      fix(tree);
+    });
+  };
+
+  fixClusters();
+
   return {
     data: JSON.stringify(output),
     atlas: {
