@@ -62,13 +62,12 @@ Quake2.Game = function (gl, assets) {
 
   this._triggers = Object.create(null);
   assets.data.entities.filter(function (entity) {
-    return /\*[0-9]+/.test(entity.model || '');
+    return entity.hasOwnProperty('model');
   }).forEach(function (entity) {
-    const index = /\*([0-9]+)/.exec(entity.model)[1] - 1;
-    if (!this._triggers[index]) {
-      this._triggers[index] = [];
+    if (!this._triggers[entity.model]) {
+      this._triggers[entity.model] = [];
     }
-    this._triggers[index].push(entity);
+    this._triggers[entity.model].push(entity);
   }, this);
 
   assets.data.entities.filter(function (entity) {
