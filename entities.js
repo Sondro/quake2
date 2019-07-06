@@ -30,6 +30,13 @@ module.exports = function (script) {
         case 'angle':
           value = parseFloat(value) * Math.PI / 180;
           break;
+        case 'model':
+          var re = /\*([0-9]+)/.exec(value);
+          value = parseInt(re[1], 10);
+          break;
+        case 'delay':
+          value = parseFloat(value);
+          break;
         }
         entity[key] = value;
       } else {
