@@ -313,7 +313,7 @@ module.exports = function (buffer, texturePath, palette) {
       if (index < 0) {
         return {
           leaf: true,
-          index: -index,
+          index: -(index + 1),
         };
       } else {
         loaded[index] = true;
