@@ -64,6 +64,7 @@ module.exports = function (buffer, texturePath, palette) {
   var leafFaces = new Uint16Array(buffer.slice(header.leafFaceTable.offset, header.leafFaceTable.offset + header.leafFaceTable.size));
   var visibility = buffer.slice(header.visibility.offset, header.visibility.offset + header.visibility.size);
   var textureInformation = buffer.slice(header.textureInformation.offset, header.textureInformation.offset + header.textureInformation.size);
+  var models = buffer.slice(header.models.offset, header.models.offset + header.models.size);
   var brushes = buffer.slice(header.brushes.offset, header.brushes.offset + header.brushes.size);
   var brushPlanes = buffer.slice(header.brushSides.offset, header.brushSides.offset + header.brushSides.size);
   var leafBrushes = new Uint16Array(buffer.slice(header.leafBrushTable.offset, header.leafBrushTable.offset + header.leafBrushTable.size));
@@ -132,6 +133,10 @@ module.exports = function (buffer, texturePath, palette) {
         count: [],
         table: Array.prototype.slice.call(leafBrushes),
       },
+    },
+    models: {
+      origin: [],
+      root: [],
     },
     visibility: [],
     textureInformation: {
@@ -230,6 +235,17 @@ module.exports = function (buffer, texturePath, palette) {
     output.leaves.faces.count.push(leaf.readUInt16LE(22));
     output.leaves.brushes.first.push(leaf.readUInt16LE(24));
     output.leaves.brushes.count.push(leaf.readUInt16LE(26));
+  }
+
+  var modelCount = header.models.size / 48;
+  for (var i = 0; i < modelCount; i++) {
+    var model = new Buffer(new Uint8Array(models.slice(i * 48, (i + 1) * 48)));
+    output.models.origin.push(
+        model.readFloatLE(24),
+        model.readFloatLE(32),
+        model.readFloatLE(28)
+        );
+    output.models.root.push(model.readUInt32LE(36));
   }
 
   var clusterCount = (new Uint32Array(visibility.slice(0, 4)))[0];
