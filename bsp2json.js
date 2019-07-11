@@ -65,9 +65,6 @@ module.exports = function (buffer, texturePath, palette) {
   var visibility = buffer.slice(header.visibility.offset, header.visibility.offset + header.visibility.size);
   var textureInformation = buffer.slice(header.textureInformation.offset, header.textureInformation.offset + header.textureInformation.size);
   var models = buffer.slice(header.models.offset, header.models.offset + header.models.size);
-  var brushes = buffer.slice(header.brushes.offset, header.brushes.offset + header.brushes.size);
-  var brushPlanes = buffer.slice(header.brushSides.offset, header.brushSides.offset + header.brushSides.size);
-  var leafBrushes = new Uint16Array(buffer.slice(header.leafBrushTable.offset, header.leafBrushTable.offset + header.leafBrushTable.size));
   var lightmapLump = buffer.slice(header.lightmaps.offset, header.lightmaps.offset + header.lightmaps.size);
 
   function fixVertices(vertices) {
@@ -100,12 +97,6 @@ module.exports = function (buffer, texturePath, palette) {
       data: [],
       type: [],
     },
-    brushes: {
-      flags: [],
-      first: [],
-      count: [],
-      planes: [],
-    },
     nodes: {
       count: header.nodes.size / 28,
       plane: [],
@@ -127,11 +118,6 @@ module.exports = function (buffer, texturePath, palette) {
         first: [],
         count: [],
         table: Array.prototype.slice.call(leafFaces),
-      },
-      brushes: {
-        first: [],
-        count: [],
-        table: Array.prototype.slice.call(leafBrushes),
       },
     },
     models: {
@@ -181,20 +167,6 @@ module.exports = function (buffer, texturePath, palette) {
     output.planes.type.push(plane.readUInt32LE(16));
   }
 
-  var brushCount = header.brushes.size / 12;
-  for (var i = 0; i < brushCount; i++) {
-    var brush = new Buffer(new Uint8Array(brushes.slice(i * 12, (i + 1) * 12)));
-    output.brushes.flags.push(brush.readUInt32LE(8));
-    output.brushes.first.push(brush.readUInt32LE(0));
-    output.brushes.count.push(brush.readUInt32LE(4));
-  }
-
-  var brushPlaneCount = header.brushSides.size / 4;
-  for (var i = 0; i < brushPlaneCount; i++) {
-    var brushPlane = new Buffer(new Uint8Array(brushPlanes.slice(i * 4, (i + 1) * 4)));
-    output.brushes.planes.push(brushPlane.readUInt16LE(0));
-  }
-
   for (var i = 0; i < output.nodes.count; i++) {
     var node = new Buffer(new Uint8Array(nodes.slice(i * 28, (i + 1) * 28)));
     output.nodes.plane.push(node.readUInt32LE(0));
@@ -233,8 +205,6 @@ module.exports = function (buffer, texturePath, palette) {
         );
     output.leaves.faces.first.push(leaf.readUInt16LE(20));
     output.leaves.faces.count.push(leaf.readUInt16LE(22));
-    output.leaves.brushes.first.push(leaf.readUInt16LE(24));
-    output.leaves.brushes.count.push(leaf.readUInt16LE(26));
   }
 
   var modelCount = header.models.size / 48;
