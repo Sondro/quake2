@@ -28,7 +28,7 @@ Quake2.Game = function (gl, assets) {
   }
   this._bsp = this._bsps[0];
 
-  this.camera = new Quake2.Camera(this._bsp);
+  this.camera = new Quake2.Camera(this._bsps);
 
   this._skyBox = new Quake2.SkyBox(gl, assets, this.camera);
   this._worldProgram = new Quake2.WorldProgram(gl, assets, this.camera);
