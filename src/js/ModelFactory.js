@@ -16,7 +16,7 @@ Quake2.ModelFactory.prototype.create = function (name) {
     const baseModel = this._baseModels[name];
     return new Quake2.AnimatedModel(baseModel);
   } else {
-    throw new Error('unknown model "' + name + '"');
+    throw new Error(`unknown model "${name}"`);
   }
 };
 
@@ -28,6 +28,6 @@ Quake2.ModelFactory.prototype.spawn = function (name, position, angle) {
     this.models.push(model);
     return model;
   } else {
-    throw new Error('unknown model "' + name + '"');
+    throw new Error(`unknown model "${name}"`);
   }
 };

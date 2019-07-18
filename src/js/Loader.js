@@ -34,7 +34,7 @@ Quake2.Loader.prototype._loadHash = function (hash) {
 };
 
 Quake2.Loader.prototype.loadData = function (path) {
-  return Promise.resolve($.getJSON('baseq2/' + path + '.json'));
+  return Promise.resolve($.getJSON(`baseq2/${path}.json`));
 };
 
 Quake2.Loader.prototype.loadImage = function (path) {
@@ -48,9 +48,9 @@ Quake2.Loader.prototype.loadImage = function (path) {
     image.onerror = function () {
       image.onload = null;
       image.onerror = null;
-      reject(new Error('Failed to load ' + path));
+      reject(new Error(`Failed to load ${path}`));
     };
-    image.src = 'baseq2/' + path;
+    image.src = `baseq2/${path}`;
   });
 };
 
@@ -62,28 +62,28 @@ Quake2.Loader.prototype.loadImages = function (paths) {
 
 Quake2.Loader.prototype.loadSkyBox = function (name) {
   const hash = Object.create(null);
-  hash.back = this.loadImage('env/' + name + 'bk.png');
-  hash.down = this.loadImage('env/' + name + 'dn.png');
-  hash.front = this.loadImage('env/' + name + 'ft.png');
-  hash.left = this.loadImage('env/' + name + 'lf.png');
-  hash.right = this.loadImage('env/' + name + 'rt.png');
-  hash.up = this.loadImage('env/' + name + 'up.png');
+  hash.back = this.loadImage(`env/${name}bk.png`);
+  hash.down = this.loadImage(`env/${name}dn.png`);
+  hash.front = this.loadImage(`env/${name}ft.png`);
+  hash.left = this.loadImage(`env/${name}lf.png`);
+  hash.right = this.loadImage(`env/${name}rt.png`);
+  hash.up = this.loadImage(`env/${name}up.png`);
   return this._loadHash(hash);
 };
 
 Quake2.Loader.prototype.loadTexture = function (name) {
-  return this.loadImage('textures/' + name + '.png');
+  return this.loadImage(`textures/${name}.png`);
 };
 
 Quake2.Loader.prototype.loadTextures = function (names) {
   return this.loadImages(names.map(function (name) {
-    return 'textures/' + name + '.png';
+    return `textures/${name}.png`;
   }));
 };
 
 Quake2.Loader.prototype.loadSkins = function (names) {
   return Promise.all(names.map(function (name) {
-    return this.loadImage(name + '.png');
+    return this.loadImage(`${name}.png`);
   }, this)).then(function (images) {
     return this._zip(names, images);
   }.bind(this));
@@ -91,7 +91,7 @@ Quake2.Loader.prototype.loadSkins = function (names) {
 
 Quake2.Loader.prototype.loadSound = function (path) {
   return new Promise(function (resolve, reject) {
-    const audio = new Audio('baseq2/sound/' + path + '.wav');
+    const audio = new Audio(`baseq2/sound/${path}.wav`);
     audio.oncanplaythrough = function () {
       audio.oncanplaythrough = null;
       audio.onerror = null;
@@ -100,7 +100,7 @@ Quake2.Loader.prototype.loadSound = function (path) {
     audio.onerror = function () {
       audio.oncanplaythrough = null;
       audio.onerror = null;
-      reject(new Error('Failed to load ' + path + '.wav'));
+      reject(new Error(`Failed to load ${path}.wav`));
     };
     audio.load();
   });
@@ -120,14 +120,14 @@ Quake2.Loader.prototype._loadWeaponSounds = function () {
       // TODO: other weapons
   ].map(function (WeaponClass) {
     return WeaponClass.SOUNDS.map(function (path) {
-      return 'weapons/' + path;
+      return `weapons/${path}`;
     });
   }).flatten());
 };
 
 Quake2.Loader.prototype.loadModel = function (name) {
   const response = {};
-  return this.loadData('models/' + name + '/tris').then(function (data) {
+  return this.loadData(`models/${name}/tris`).then(function (data) {
     response.data = data;
     return this.loadSkins(data.skin.names);
   }.bind(this)).then(function (skins) {
@@ -158,9 +158,9 @@ Quake2.Loader.prototype._loadEntityModels = function (entities) {
 Quake2.Loader.prototype.loadMap = function (name) {
   var data;
   return this._loadHash({
-    data: this.loadData('maps/' + name),
-    texture: this.loadImage('maps/' + name + '.png'),
-    lightmap: this.loadImage('maps/' + name + '.light.png'),
+    data: this.loadData(`maps/${name}`),
+    texture: this.loadImage(`maps/${name}.png`),
+    lightmap: this.loadImage(`maps/${name}.light.png`),
     normals: this.loadData('normals'),
   }).then(function (response) {
     data = response;

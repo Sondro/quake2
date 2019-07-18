@@ -1,28 +1,13 @@
+Quake2.FLAGS.defineString('map', 'base1');
+
+
 Quake2.start = function () {
   const canvas = document.getElementById('canvas');
   const gl = canvas.getContext('webgl');
 
   const loadMap = function () {
-    const hash = Object.create(null);
-    window.location.search
-        .replace(/^\?/, '')
-        .split('&')
-        .forEach(function (parameter) {
-          const index = parameter.indexOf('=');
-          if (index < 0) {
-            hash[decodeURIComponent(parameter)] = true;
-          } else {
-            const key = decodeURIComponent(parameter.slice(0, index));
-            const value = decodeURIComponent(parameter.slice(index + 1));
-            hash[key] = value;
-          }
-        });
     const loader = new Quake2.Loader();
-    if ('map' in hash) {
-      return loader.loadMap(hash.map);
-    } else {
-      return loader.loadMap('base1');
-    }
+    return loader.loadMap(Quake2.FLAGS.get('map'));
   };
 
   loadMap().then(function (assets) {

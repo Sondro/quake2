@@ -37,5 +37,5 @@ Quake2.Sound.play = function (name) {
 };
 
 Quake2.Sound.playWeapon = function (name) {
-  this.play('weapons/' + name);
+  this.play(`weapons/${name}`);
 };
