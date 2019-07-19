@@ -125,6 +125,14 @@ Quake2.Loader.prototype._loadWeaponSounds = function () {
   }).flatten());
 };
 
+Quake2.Loader.prototype._loadNoises = function (entities) {
+  return this.loadSounds(entities.filter(function (entity) {
+    return entity.hasOwnProperty('noise');
+  }).map(function (entity) {
+    return entity.noise.replace(/\.wav$/, '');
+  }));
+};
+
 Quake2.Loader.prototype.loadModel = function (name) {
   const response = {};
   return this.loadData(`models/${name}/tris`).then(function (data) {
@@ -174,6 +182,7 @@ Quake2.Loader.prototype.loadMap = function (name) {
       skyBoxNames.length ? this.loadSkyBox(skyBoxNames[0]) : null,
       this._loadEntityModels(entities),
       this._loadWeaponSounds(),
+      this._loadNoises(entities),
     ]);
   }.bind(this)).then(function (response) {
     data.skyBox = response[0];
