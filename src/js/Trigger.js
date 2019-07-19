@@ -1,7 +1,6 @@
-Quake2.Trigger = function (bsp, entities, callback) {
+Quake2.Trigger = function (bsp, entities) {
   this._bsp = bsp;
   this._entities = entities;
-  this._callback = callback;
   this._colliding = false;
 };
 
