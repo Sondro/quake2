@@ -29,9 +29,11 @@ Quake2.Game = function (gl, assets) {
     const createTarget = function () {
       switch (entity.classname) {
       case 'trigger_once':
-        return new Quake2.Target.Once(entity.targetname, play, entity.delay || 0);
+        return new Quake2.Target.Once(play, entity.delay || 0);
+      case 'trigger_multiple':
+        return new Quake2.Target.Multiple(play, entity.delay || 0);
       case 'trigger_relay':
-        return new Quake2.Target.Relay(entity.targetname, play, play, entity.delay || 0);
+        return new Quake2.Target.Relay(play, play, entity.delay || 0);
       default:
         return null;
       }
