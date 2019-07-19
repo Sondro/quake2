@@ -6,6 +6,27 @@ Quake2.BSP = function (gl, data, index, pvs) {
   return this._parse(data, index);
 };
 
+Quake2.BSP.blocks = function (data, index) {
+  if (index < 0) {
+    const leafIndex = -(index + 1);
+    const clusterIndex = data.leaves.cluster[leafIndex];
+    if (clusterIndex >= 0) {
+      const first = data.leaves.faces.first[leafIndex];
+      const count = data.leaves.faces.count[leafIndex];
+      const faces = data.leaves.faces.table.slice(first, first + count);
+      return faces.reduce(function (accumulator, currentValue) {
+        const textureIndex = data.faces.textureInformation[currentValue];
+        return accumulator || !(data.textureInformation.flags[textureIndex] & 128 /* trigger */);
+      }, false);
+    } else {
+      return false;
+    }
+  } else {
+    return Quake2.BSP.blocks(data, data.nodes.front[index]) ||
+        Quake2.BSP.blocks(data, data.nodes.back[index]);
+  }
+};
+
 Quake2.BSP.prototype._mapFaces = function (data, index) {
   if (index < 0) {
     const leafIndex = -(index + 1);

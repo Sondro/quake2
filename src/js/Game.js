@@ -21,9 +21,21 @@ Quake2.Game = function (gl, assets) {
   });
 
   this._bsps = [];
+  this._triggers = [];
+
+  var bspIndex = 0;
   for (var i = 0; i < assets.data.nodes.count; i++) {
     if (!assets.data.nodes.loaded[i]) {
-      this._bsps.push(new Quake2.BSP(gl, assets.data, i, pvs));
+      const bsp = new Quake2.BSP(gl, assets.data, i, pvs);
+      if (Quake2.BSP.blocks(assets.data, i)) {
+        this._bsps.push(bsp);
+      } else {
+        const entities = assets.data.entities.filter(function (entity) {
+          return entity.hasOwnProperty('model') && entity.model === bspIndex;
+        });
+        this._triggers.push(new Quake2.Trigger(bsp, entities));
+      }
+      bspIndex++;
     }
   }
   this._bsp = this._bsps[0];
@@ -60,16 +72,6 @@ Quake2.Game = function (gl, assets) {
     this._targets[entity.targetname].push(entity);
   }, this);
 
-  this._triggers = Object.create(null);
-  assets.data.entities.filter(function (entity) {
-    return entity.hasOwnProperty('model');
-  }).forEach(function (entity) {
-    if (!this._triggers[entity.model]) {
-      this._triggers[entity.model] = [];
-    }
-    this._triggers[entity.model].push(entity);
-  }, this);
-
   assets.data.entities.filter(function (entity) {
     return entity.classname === 'info_player_start';
   }).forEach(function (spawnPoint) {
@@ -92,18 +94,14 @@ Quake2.Game.prototype.resize = function (width, height) {
 
 
 Quake2.Game.prototype.tick = function (t0, t1, keys) {
-  for (var i in this._triggers) {
-    if (i in this._bsps) {
-      if (this._bsps[i].collides(this.camera.origin)) {
-        console.dir(this._triggers[i]);
-      }
-    }
-  }
+  this.camera.tick(t0, t1, keys);
+  this.weapon.tick(t1, keys);
   for (var i = 0; i < this.tickers.length; i++) {
     this.tickers[i].tick(t1);
   }
-  this.camera.tick(t0, t1, keys);
-  this.weapon.tick(t1, keys);
+  for (var i = 0; i < this._triggers.length; i++) {
+    this._triggers[i].test(this.camera.origin);
+  }
 };
 
 
