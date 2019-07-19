@@ -10,9 +10,26 @@ Quake2.BSP.prototype.locate = function (position) {
   return this._root.locate(position);
 };
 
+Quake2.BSP._temp = {
+  x: 0,
+  y: 0,
+  z: 0,
+};
+
 Quake2.BSP.prototype._clip = function (position, offset) {
   if (this._root.blocks) {
-    return this._root.clip(position, offset);
+    const temp = Quake2.BSP._temp;
+    temp.x = position.x + offset.x;
+    temp.y = position.y + offset.y;
+    temp.z = position.z + offset.z;
+    var result = false;
+    while (this._root.clip(position, offset, temp)) {
+      result = true;
+      temp.x = position.x + offset.x;
+      temp.y = position.y + offset.y;
+      temp.z = position.z + offset.z;
+    }
+    return result;
   } else {
     return this._root.collides(position);
   }
@@ -98,12 +115,6 @@ Quake2.BSP.Node = function (loader, data, index) {
   this.blocks = this.front.blocks || this.back.blocks;
 };
 
-Quake2.BSP.Node._temp = {
-  x: 0,
-  y: 0,
-  z: 0,
-};
-
 Quake2.BSP.Node.prototype.locate = function (position) {
   const x = position.x * this.plane[0] + position.y * this.plane[1] +
       position.z * this.plane[2] - this.plane[3];
@@ -124,7 +135,7 @@ Quake2.BSP.Node.prototype.collides = function (position) {
   }
 };
 
-Quake2.BSP.Node.prototype._clip = function (position, offset) {
+Quake2.BSP.Node.prototype.clip = function (position, offset, final) {
   const nx = this.plane[0];
   const ny = this.plane[1];
   const nz = this.plane[2];
@@ -139,9 +150,9 @@ Quake2.BSP.Node.prototype._clip = function (position, offset) {
   const a1 = x1 * nx + y1 * ny + z1 * nz;
   if (a0 < d) {
     if (a1 < d) {
-      return this.back._clip(position, offset);
+      return this.back.clip(position, offset, final);
     } else {
-      if (this.collides(Quake2.BSP.Node._temp)) {
+      if (this.collides(final)) {
         Quake2.Physics.clip(position, offset, -nx, -ny, -nz, -d);
         return true;
       } else {
@@ -150,31 +161,16 @@ Quake2.BSP.Node.prototype._clip = function (position, offset) {
     }
   } else {
     if (a1 < d) {
-      if (this.collides(Quake2.BSP.Node._temp)) {
+      if (this.collides(final)) {
         Quake2.Physics.clip(position, offset, nx, ny, nz, d);
         return true;
       } else {
         return false;
       }
     } else {
-      return this.front._clip(position, offset);
+      return this.front.clip(position, offset, final);
     }
   }
-};
-
-Quake2.BSP.Node.prototype.clip = function (position, offset) {
-  const temp = Quake2.BSP.Node._temp;
-  temp.x = position.x + offset.x;
-  temp.y = position.y + offset.y;
-  temp.z = position.z + offset.z;
-  var result = false;
-  while (this._clip(position, offset)) {
-    result = true;
-    temp.x = position.x + offset.x;
-    temp.y = position.y + offset.y;
-    temp.z = position.z + offset.z;
-  }
-  return result;
 };
 
 
@@ -207,7 +203,7 @@ Quake2.BSP.Leaf.prototype.collides = function (position) {
   return this.empty;
 };
 
-Quake2.BSP.Leaf.prototype._clip = function () {
+Quake2.BSP.Leaf.prototype.clip = function () {
   return false;
 };
 
