@@ -35,6 +35,9 @@ module.exports = function (script) {
           value = parseInt(re[1], 10);
           break;
         case 'delay':
+        case 'dmg':
+        case 'health':
+        case 'speed':
           value = parseFloat(value);
           break;
         }
