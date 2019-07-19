@@ -130,7 +130,7 @@ Quake2.Loader.prototype._loadNoises = function (entities) {
     return entity.hasOwnProperty('noise');
   }).map(function (entity) {
     return entity.noise.replace(/\.wav$/, '');
-  }));
+  }).unique());
 };
 
 Quake2.Loader.prototype.loadModel = function (name) {

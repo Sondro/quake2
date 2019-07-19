@@ -1,9 +1,8 @@
-Quake2.BSP = function (gl, data, index, pvs, on, off) {
+Quake2.BSP = function (gl, data, index, pvs, callback) {
   const loader = new Quake2.BSP.Loader(gl, data, index, pvs);
   this._root = loader.parse(data, index);
   this._collides = false;
-  this._on = on || null;
-  this._off = off || null;
+  this._callback = callback || null;
 };
 
 Quake2.BSP.prototype.locate = function (position) {
@@ -37,12 +36,8 @@ Quake2.BSP.prototype._clip = function (position, offset) {
 
 Quake2.BSP.prototype.clip = function (position, offset) {
   const collides = this._clip(position, offset);
-  if (collides !== this._collides) {
-    if (collides) {
-      this._on && this._on();
-    } else {
-      this._off && this._off();
-    }
+  if (collides && collides !== this._collides) {
+    this._callback && this._callback();
   }
   return this._collides = collides;
 };
