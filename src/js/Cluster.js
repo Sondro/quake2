@@ -1,3 +1,6 @@
+Quake2.FLAGS.defineBoolean('showTriggers', false);
+
+
 Quake2.EmptyCluster = function () {};
 
 Quake2.EmptyCluster.prototype.render = function () {};
@@ -58,8 +61,11 @@ Quake2.Cluster = function (gl, data, faces) {
   const _pushFace = function (i) {
     const textureIndex = data.faces.textureInformation[i];
     const flags = data.textureInformation.flags[textureIndex];
-    if (flags & 4 /* sky */ ||
-        flags & 128 /* trigger */ ) {
+    if (flags & 4 /* sky */) {
+      return;
+    }
+    if (flags & 128 /* trigger */ &&
+        !Quake2.FLAGS.get('showTriggers')) {
       return;
     }
     var k0 = data.faceEdges[data.faces.edges.offset[i]];
