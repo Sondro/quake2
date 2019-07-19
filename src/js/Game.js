@@ -21,20 +21,14 @@ Quake2.Game = function (gl, assets) {
   });
 
   this._bsps = [];
-  this._triggers = [];
-
   var bspIndex = 0;
   for (var i = 0; i < assets.data.nodes.count; i++) {
     if (!assets.data.nodes.loaded[i]) {
-      const bsp = new Quake2.BSP(gl, assets.data, i, pvs);
-      if (Quake2.BSP.blocks(assets.data, i)) {
-        this._bsps.push(bsp);
-      } else {
-        const entities = assets.data.entities.filter(function (entity) {
-          return entity.hasOwnProperty('model') && entity.model === bspIndex;
-        });
-        this._triggers.push(new Quake2.Trigger(bsp, entities));
-      }
+      const triggers = assets.data.entities.filter(function (entity) {
+        return entity.hasOwnProperty('model') && entity.model === bspIndex;
+      });
+      // TODO: trigger triggers.
+      this._bsps.push(new Quake2.BSP(gl, assets.data, i, pvs));
       bspIndex++;
     }
   }
@@ -98,9 +92,6 @@ Quake2.Game.prototype.tick = function (t0, t1, keys) {
   this.weapon.tick(t1, keys);
   for (var i = 0; i < this.tickers.length; i++) {
     this.tickers[i].tick(t1);
-  }
-  for (var i = 0; i < this._triggers.length; i++) {
-    this._triggers[i].test(this.camera.origin);
   }
 };
 
