@@ -167,7 +167,9 @@ Quake2.Game.prototype.render = function () {
   for (var i = 1; i < this._bsps.length; i++) {
     if (i in this._rotations) {
       const offset = this._rotations[i].origin;
-      this._worldProgram.prepare2(offset.x, offset.y, offset.z, 0);
+      const period = Math.PI * 2000 / this._rotations[i].speed;
+      const angle = (t % period) * Math.PI * 2 / period;
+      this._worldProgram.prepare2(offset.x, offset.y, offset.z, angle);
     } else {
       this._worldProgram.prepare2(0, 0, 0, 0);
     }
