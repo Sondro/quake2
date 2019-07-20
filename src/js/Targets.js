@@ -1,8 +1,17 @@
 Quake2.Target = {};
 
 
+Quake2.Target.Default = function (callback, delay) {
+  this._callback = callback;
+  this._delay = delay;
+};
+
+Quake2.Target.Default.prototype.trigger = function () {
+  window.setTimeout(this._callback, this._delay);
+};
+
+
 Quake2.Target.Once = function (callback, delay) {
-  this.name = name;
   this._callback = callback;
   this._delay = delay;
   this._triggered = false;
@@ -37,7 +46,6 @@ Quake2.Target.Multiple.prototype.trigger = function () {
 
 
 Quake2.Target.Relay = function (on, off, delay) {
-  this.name = name;
   this._on = on;
   this._off = off;
   this._delay = delay;

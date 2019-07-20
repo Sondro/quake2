@@ -24,6 +24,17 @@ Quake2.Loader.prototype._zip = function (keys, values) {
   return result;
 };
 
+Quake2.Loader.prototype._merge = function () {
+  const result = Object.create(null);
+  for (var i = 0; i < arguments.length; i++) {
+    const hash = arguments[i];
+    for (var key in hash) {
+      result[key] = hash[key];
+    }
+  }
+  return result;
+};
+
 Quake2.Loader.prototype._loadHash = function (hash) {
   const keys = Object.keys(hash);
   return Promise.all(keys.map(function (key) {
@@ -129,7 +140,7 @@ Quake2.Loader.prototype._loadNoises = function (entities) {
   return this.loadSounds(entities.filter(function (entity) {
     return entity.hasOwnProperty('noise');
   }).map(function (entity) {
-    return entity.noise.replace(/\.wav$/, '');
+    return entity.noise;
   }).unique());
 };
 
@@ -187,7 +198,7 @@ Quake2.Loader.prototype.loadMap = function (name) {
   }.bind(this)).then(function (response) {
     data.skyBox = response[0];
     data.models = response[1];
-    data.sounds = response[2];
+    data.sounds = this._merge(response[2], response[3]);
     return data;
-  });
+  }.bind(this));
 };

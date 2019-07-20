@@ -22,10 +22,27 @@ Quake2.Game = function (gl, assets) {
 
   this._targets = Object.create(null);
   this._triggers = Object.create(null);
-  assets.data.entities.map(function (entity) {
-    const play = function () {
-      console.dir(entity);
-    };
+
+  const playEntity = function (entity) {
+    console.dir(entity);
+    if (entity.hasOwnProperty('noise')) {
+      Quake2.Sound.play(entity.noise);
+    }
+    if (entity.hasOwnProperty('target')) {
+      if (entity.target in this._targets) {
+        const targets = this._targets[entity.target];
+        for (var i = 0; i < targets.length; i++) {
+          targets[i].trigger();
+        }
+      }
+    }
+  };
+
+  assets.data.entities.filter(function (entity) {
+    return entity.hasOwnProperty('targetname') ||
+        entity.hasOwnProperty('model');
+  }).map(function (entity) {
+    const play = playEntity.bind(this, entity);
     const createTarget = function () {
       switch (entity.classname) {
       case 'trigger_once':
@@ -35,7 +52,7 @@ Quake2.Game = function (gl, assets) {
       case 'trigger_relay':
         return new Quake2.Target.Relay(play, play, entity.delay || 0);
       default:
-        return null;
+        return new Quake2.Target.Default(play, entity.delay || 0);
       }
     };
     const target = createTarget();
@@ -47,13 +64,16 @@ Quake2.Game = function (gl, assets) {
     } else {
       return null;
     }
-  }).filter(function (pair) {
+  }, this).filter(function (pair) {
     return pair !== null;
   }).forEach(function (pair) {
     const entity = pair.entity;
     const target = pair.target;
     if (entity.hasOwnProperty('targetname')) {
-      this._targets[entity.targetname] = target;
+      if (!this._targets[entity.targetname]) {
+        this._targets[entity.targetname] = [];
+      }
+      this._targets[entity.targetname].push(target);
     }
     if (entity.hasOwnProperty('model')) {
       if (!this._triggers[entity.model]) {
