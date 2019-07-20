@@ -40,6 +40,9 @@ module.exports = function (script) {
         case 'speed':
           value = parseFloat(value);
           break;
+        case 'noise':
+          value = value.replace(/\.wav$/, '');
+          break;
         }
         entity[key] = value;
       } else {
