@@ -44,7 +44,11 @@ Quake2.WorldProgram = function (gl, assets, camera) {
 
   this._locations = {
     screenSize: gl.getUniformLocation(this._program, 'ScreenSize'),
-    position: gl.getUniformLocation(this._program, 'Position'),
+    camera: {
+      position: gl.getUniformLocation(this._program, 'Camera.Position'),
+      angle: gl.getUniformLocation(this._program, 'Camera.Angle'),
+    },
+    offset: gl.getUniformLocation(this._program, 'Offset'),
     angle: gl.getUniformLocation(this._program, 'Angle'),
     atlasSize: gl.getUniformLocation(this._program, 'AtlasSize'),
     atlas: gl.getUniformLocation(this._program, 'Atlas'),
@@ -70,7 +74,7 @@ Quake2.WorldProgram.prototype.resizeScreen = function (width, height) {
 };
 
 
-Quake2.WorldProgram.prototype.prepare = function () {
+Quake2.WorldProgram.prototype.prepare1 = function () {
   const gl = this._gl;
 
   gl.useProgram(this._program);
@@ -82,16 +86,18 @@ Quake2.WorldProgram.prototype.prepare = function () {
   gl.bindTexture(gl.TEXTURE_2D, this._textures.lightmap);
 
   gl.uniform3f(
-      this._locations.position,
+      this._locations.camera.position,
       this._camera.head.x,
       this._camera.head.y,
       this._camera.head.z
       );
   gl.uniform2f(
-      this._locations.angle,
+      this._locations.camera.angle,
       this._camera.angle.x,
       this._camera.angle.y
       );
+  gl.uniform3f(this._locations.offset, 0, 0, 0);
+  gl.uniform1f(this._locations.angle, 0);
 
   gl.enableVertexAttribArray(1);
   gl.enableVertexAttribArray(2);
@@ -100,4 +106,11 @@ Quake2.WorldProgram.prototype.prepare = function () {
   gl.enableVertexAttribArray(5);
   gl.enableVertexAttribArray(6);
 
+};
+
+
+Quake2.WorldProgram.prototype.prepare2 = function (x, y, z, a) {
+  const gl = this._gl;
+  gl.uniform3f(this._locations.offset, x, y, z);
+  gl.uniform1f(this._locations.angle, a);
 };

@@ -63,6 +63,20 @@ Quake2.Game = function (gl, assets) {
     }
   }, this);
 
+  this._rotations = Object.create(null);
+  assets.data.entities.filter(function (entity) {
+    return entity.classname === 'func_rotating';
+  }).forEach(function (entity) {
+    this._rotations[entity.model] = {
+      origin: {
+        x: entity.origin[0],
+        y: entity.origin[1],
+        z: entity.origin[2],
+      },
+      speed: entity.speed * Math.PI / 180,
+    };
+  }, this);
+
   const bindBspCallback = function (triggers) {
     if (triggers) {
       return function () {
@@ -146,11 +160,17 @@ Quake2.Game.prototype.render = function () {
 
   this._skyBox.render();
 
-  this._worldProgram.prepare();
+  this._worldProgram.prepare1();
   const leaf = this._bsp.locate(this.camera.head);
   leaf.render();
 
   for (var i = 1; i < this._bsps.length; i++) {
+    if (i in this._rotations) {
+      const offset = this._rotations[i].origin;
+      this._worldProgram.prepare2(offset.x, offset.y, offset.z, 0);
+    } else {
+      this._worldProgram.prepare2(0, 0, 0, 0);
+    }
     this._bsps[i].locate(this.camera.head).render();
   }
 
