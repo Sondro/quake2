@@ -125,14 +125,14 @@ Quake2.Loader.prototype.loadSounds = function (names) {
   }.bind(this));
 };
 
-Quake2.Loader.prototype._loadWeaponSounds = function () {
+Quake2.Loader.prototype._loadModelSounds = function () {
   return this.loadSounds([
+      Quake2.Entities.Explosion,
+      // TODO: other entities
       Quake2.Weapons.Blaster,
       // TODO: other weapons
-  ].map(function (WeaponClass) {
-    return WeaponClass.SOUNDS.map(function (path) {
-      return `weapons/${path}`;
-    });
+  ].map(function (ModelClass) {
+    return ModelClass.SOUNDS;
   }).flatten());
 };
 
@@ -192,7 +192,7 @@ Quake2.Loader.prototype.loadMap = function (name) {
     return Promise.all([
       skyBoxNames.length ? this.loadSkyBox(skyBoxNames[0]) : null,
       this._loadEntityModels(entities),
-      this._loadWeaponSounds(),
+      this._loadModelSounds(),
       this._loadNoises(entities),
     ]);
   }.bind(this)).then(function (response) {

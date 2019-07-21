@@ -57,7 +57,11 @@ Quake2.BaseModel._loadAnimations = function (data) {
   });
 
   for (var name in animations) {
-    animations[name] = Object.keys(animations[name]).sort().map(function (key) {
+    animations[name] = Object.keys(animations[name]).map(function (key) {
+      return parseInt(key, 10);
+    }).sort(function (a, b) {
+      return a - b;
+    }).map(function (key) {
       return animations[name][key];
     });
   }

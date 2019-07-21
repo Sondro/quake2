@@ -14,12 +14,6 @@ Quake2.Game = function (gl, assets) {
   // selectively enabled or disabled by each program.
   gl.enableVertexAttribArray(0);
 
-  const pvs = Quake2.PVS.parse(assets.data);
-
-  assets.data.nodes.loaded = assets.data.nodes.plane.map(function () {
-    return false;
-  });
-
   this._targets = Object.create(null);
   this._triggers = Object.create(null);
 
@@ -27,6 +21,14 @@ Quake2.Game = function (gl, assets) {
     console.dir(entity);
     if (entity.hasOwnProperty('noise')) {
       Quake2.Sound.play(entity.noise);
+    } else if (entity.classname === 'target_explosion') {
+      /*
+      Quake2.models.spawn('objects/explode', {
+        x: entity.origin[0],
+        y: entity.origin[1],
+        z: entity.origin[2],
+      }, 0);
+      */
     }
     if (entity.hasOwnProperty('target')) {
       if (entity.target in this._targets) {
@@ -108,6 +110,12 @@ Quake2.Game = function (gl, assets) {
       return null;
     }
   };
+
+  const pvs = Quake2.PVS.parse(assets.data);
+
+  assets.data.nodes.loaded = assets.data.nodes.plane.map(function () {
+    return false;
+  });
 
   this._bsps = [];
   var bspIndex = 0;

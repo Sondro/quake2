@@ -24,4 +24,4 @@ Quake2.Weapons.Blaster.prototype.render = function (t) {
   this._model.render(0, 0, 0, Math.PI / 2, t);
 };
 
-Quake2.Weapons.Blaster.SOUNDS = ['blastf1a'];
+Quake2.Weapons.Blaster.SOUNDS = ['weapons/blastf1a'];
