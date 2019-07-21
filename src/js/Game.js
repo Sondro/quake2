@@ -22,13 +22,7 @@ Quake2.Game = function (gl, assets) {
     if (entity.hasOwnProperty('noise')) {
       Quake2.Sound.play(entity.noise);
     } else if (entity.classname === 'target_explosion') {
-      /*
-      Quake2.models.spawn('objects/explode', {
-        x: entity.origin[0],
-        y: entity.origin[1],
-        z: entity.origin[2],
-      }, 0);
-      */
+      new Quake2.Entities.Explosion(this._modelFactory, entity);
     }
     if (entity.hasOwnProperty('target')) {
       if (entity.target in this._targets) {
@@ -89,6 +83,8 @@ Quake2.Game = function (gl, assets) {
   assets.data.entities.filter(function (entity) {
     return entity.classname === 'func_rotating';
   }).forEach(function (entity) {
+    // TODO: rotation data should be stored inside BSP objects and taken into
+    // account for collisions.
     this._rotations[entity.model] = {
       origin: {
         x: entity.origin[0],
@@ -140,6 +136,9 @@ Quake2.Game = function (gl, assets) {
 
   this.entities = assets.data.entities.filter(function (descriptor) {
     return descriptor.classname in Quake2.Entities.dictionary;
+  }).filter(function (descriptor) {
+    const EntityClass = Quake2.Entities.dictionary[descriptor.classname];
+    return EntityClass !== Quake2.Entities.Explosion;
   }).map(function (descriptor) {
     const EntityClass = Quake2.Entities.dictionary[descriptor.classname];
     return new EntityClass(this._modelFactory, descriptor);
