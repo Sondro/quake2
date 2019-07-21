@@ -52,7 +52,7 @@ Quake2.BaseModel._loadAnimations = function (data) {
       if (!(re[1] in animations)) {
         animations[re[1]] = Object.create(null);
       }
-      animations[re[1]][re[2]] = index;
+      animations[re[1]][parseInt(re[2], 10)] = index;
     }
   });
 
