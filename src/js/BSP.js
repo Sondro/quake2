@@ -1,12 +1,43 @@
 Quake2.BSP = function (gl, data, index, pvs, callback) {
   const loader = new Quake2.BSP.Loader(gl, data, index, pvs);
   this._root = loader.parse(data, index);
+  this._rotation = {
+    offset: {
+      x: 0,
+      y: 0,
+      z: 0,
+    },
+    speed: 0,
+  };
   this._collides = false;
   this._callback = callback || null;
 };
 
 Quake2.BSP.prototype.locate = function (position) {
   return this._root.locate(position);
+};
+
+Quake2.BSP.prototype.rotate = function (origin, speed) {
+  this._rotation.offset = {
+    x: origin[0],
+    y: origin[1],
+    z: origin[2],
+  };
+  this._rotation.speed = speed;
+};
+
+Quake2.BSP.prototype.render = function (worldProgram, position, t) {
+  const leaf = this._root.locate(position);
+  const offset = this._rotation.offset;
+  if (this._rotation.speed) {
+    const period = Math.PI * 2000 / this._rotation.speed;
+    const angle = (t % period) * Math.PI * 2 / period;
+    worldProgram.prepare2(offset.x, offset.y, offset.z, angle);
+  } else {
+    worldProgram.prepare2(offset.x, offset.y, offset.z, 0);
+  }
+  leaf.render();
+  return leaf;
 };
 
 Quake2.BSP._temp = {

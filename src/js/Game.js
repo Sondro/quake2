@@ -79,22 +79,6 @@ Quake2.Game = function (gl, assets) {
     }
   }, this);
 
-  this._rotations = Object.create(null);
-  assets.data.entities.filter(function (entity) {
-    return entity.classname === 'func_rotating';
-  }).forEach(function (entity) {
-    // TODO: rotation data should be stored inside BSP objects and taken into
-    // account for collisions.
-    this._rotations[entity.model] = {
-      origin: {
-        x: entity.origin[0],
-        y: entity.origin[1],
-        z: entity.origin[2],
-      },
-      speed: entity.speed * Math.PI / 180,
-    };
-  }, this);
-
   const bindBspCallback = function (triggers) {
     if (triggers) {
       return function () {
@@ -122,6 +106,14 @@ Quake2.Game = function (gl, assets) {
     }
   }
   this._bsp = this._bsps[0];
+
+  assets.data.entities.filter(function (entity) {
+    return entity.classname === 'func_rotating';
+  }).forEach(function (entity) {
+    if (entity.model < this._bsps.length) {
+      this._bsps[entity.model].rotate(entity.origin, entity.speed * Math.PI / 180);
+    }
+  }, this);
 
   this.camera = new Quake2.Camera(this._bsps);
 
@@ -188,19 +180,10 @@ Quake2.Game.prototype.render = function () {
   this._skyBox.render();
 
   this._worldProgram.prepare1();
-  const leaf = this._bsp.locate(this.camera.head);
-  leaf.render();
+  const leaf = this._bsp.render(this._worldProgram, this.camera.head, t);
 
   for (var i = 1; i < this._bsps.length; i++) {
-    if (i in this._rotations) {
-      const offset = this._rotations[i].origin;
-      const period = Math.PI * 2000 / this._rotations[i].speed;
-      const angle = (t % period) * Math.PI * 2 / period;
-      this._worldProgram.prepare2(offset.x, offset.y, offset.z, angle);
-    } else {
-      this._worldProgram.prepare2(0, 0, 0, 0);
-    }
-    this._bsps[i].locate(this.camera.head).render();
+    this._bsps[i].render(this._worldProgram, this.camera.head, t);
   }
 
   this._modelProgram.prepareForEntities();
