@@ -33,57 +33,64 @@ Quake2.start = function () {
 
     resize();
 
-    var t0 = Date.now();
-    window.setInterval(function () {
-      const controlDown = keys[17];
-      if (leftClick) {
-        keys[17] = true;
-      }
-      const t1 = Date.now();
-      game.tick(t0, t1, keys);
-      t0 = t1;
-      if (leftClick) {
-        keys[17] = controlDown;
-        leftClick = false;
-      }
-    }, 33);
+    const overlay = $('#overlay');
+    overlay.one('click', function () {
+      overlay.hide();
+      $(canvas).show();
 
-    $(canvas).on('click', function () {
-      canvas.requestPointerLock();
+      var t0 = Date.now();
+      window.setInterval(function () {
+        const controlDown = keys[17];
+        if (leftClick) {
+          keys[17] = true;
+        }
+        const t1 = Date.now();
+        game.tick(t0, t1, keys);
+        t0 = t1;
+        if (leftClick) {
+          keys[17] = controlDown;
+          leftClick = false;
+        }
+      }, 33);
+
+      $(canvas).on('click', function () {
+        canvas.requestPointerLock();
+      });
+
+      canvas.addEventListener('mousemove', function (event) {
+        game.camera.rotate(
+            -(event.movementY || 0) * 2 / dimension,
+            -(event.movementX || 0) * 2 / dimension);
+      }, true);
+
+      $(window).on('resize', function () {
+        resize();
+      }).on('keydown', function (event) {
+        event.preventDefault();
+        keys[event.which] = true;
+      }).on('keyup', function (event) {
+        event.preventDefault();
+        keys[event.which] = false;
+      }).on('mousedown', function (event) {
+        if (event.which === 1) {
+          leftClick = true;
+          keys[17] = true;
+        }
+      }).on('mouseup', function (event) {
+        if (event.which === 1) {
+          keys[17] = false;
+        }
+      });
+
+      (function render() {
+        game.render();
+        window.requestAnimationFrame(render);
+      }());
+
+      // Increase precision of the first tick by updating t0 as late as possible.
+      t0 = Date.now();
+
     });
-
-    canvas.addEventListener('mousemove', function (event) {
-      game.camera.rotate(
-          -(event.movementY || 0) * 2 / dimension,
-          -(event.movementX || 0) * 2 / dimension);
-    }, true);
-
-    $(window).on('resize', function () {
-      resize();
-    }).on('keydown', function (event) {
-      event.preventDefault();
-      keys[event.which] = true;
-    }).on('keyup', function (event) {
-      event.preventDefault();
-      keys[event.which] = false;
-    }).on('mousedown', function (event) {
-      if (event.which === 1) {
-        leftClick = true;
-        keys[17] = true;
-      }
-    }).on('mouseup', function (event) {
-      if (event.which === 1) {
-        keys[17] = false;
-      }
-    });
-
-    (function render() {
-      game.render();
-      window.requestAnimationFrame(render);
-    }());
-
-    // Increase precision of the first tick by updating t0 as late as possible.
-    t0 = Date.now();
 
   });
 
