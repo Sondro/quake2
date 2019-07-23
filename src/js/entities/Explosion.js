@@ -21,4 +21,11 @@ Quake2.Entities.Explosion = function (models, descriptor) {
 Quake2.Entities.Explosion.MODELS = ['objects/r_explode'];
 Quake2.Entities.Explosion.SOUNDS = ['weapons/rocklx1a'],
 
+Quake2.Entities.Explosion.prototype.tick = function (t) {
+  if (this._model.isRestarting(t)) {
+    this._model.destroy();
+    return true;
+  }
+};
+
 Quake2.Entities.dictionary['target_explosion'] = Quake2.Entities.Explosion;

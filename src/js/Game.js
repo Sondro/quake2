@@ -22,7 +22,8 @@ Quake2.Game = function (gl, assets) {
     if (entity.hasOwnProperty('noise')) {
       Quake2.Sound.play(entity.noise);
     } else if (entity.classname === 'target_explosion') {
-      new Quake2.Entities.Explosion(this._modelFactory, entity);
+      const explosion = new Quake2.Entities.Explosion(this._modelFactory, entity);
+      this.tickers.push(explosion);
     }
     if (entity.hasOwnProperty('target')) {
       if (entity.target in this._targets) {
@@ -164,8 +165,13 @@ Quake2.Game.prototype.resize = function (width, height) {
 Quake2.Game.prototype.tick = function (t0, t1, keys) {
   this.camera.tick(t0, t1, keys);
   this.weapon.tick(t1, keys);
-  for (var i = 0; i < this.tickers.length; i++) {
-    this.tickers[i].tick(t1);
+  var i = 0;
+  while (i < this.tickers.length) {
+    if (this.tickers[i].tick(t1)) {
+      this.tickers.splice(i, 1);
+    } else {
+      i++;
+    }
   }
 };
 
@@ -187,13 +193,7 @@ Quake2.Game.prototype.render = function () {
   }
 
   this._modelProgram.prepareForEntities();
-  for (var i = 0; i < this._modelFactory.models.length; i++) {
-    const model = this._modelFactory.models[i];
-    const modelLeaf = this._bsp.locate(model.position);
-    if (leaf.views(modelLeaf)) {
-      model.render(t);
-    }
-  }
+  this._modelFactory.renderModels(this._bsp, leaf, t);
 
   this._modelProgram.prepareForWeapon();
   this.weapon.render(t);

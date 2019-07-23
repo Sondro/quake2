@@ -1,5 +1,7 @@
-Quake2.PositionedModel = function (model, position, angle) {
+Quake2.PositionedModel = function (model, factory, id, position, angle) {
   Quake2.AnimatedModel.call(this, model);
+  this._factory = factory;
+  this._id = id;
   this.position = position;
   this.angle = angle;
 };
@@ -15,4 +17,8 @@ Quake2.PositionedModel.prototype.render = function (t) {
     this.angle,
     t
     );
+};
+
+Quake2.PositionedModel.prototype.destroy = function () {
+  this._factory.destroy(this._id);
 };
