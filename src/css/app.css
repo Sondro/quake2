@@ -19,5 +19,5 @@ canvas#canvas {
 
 #overlay {
   background-image: url("../baseq2/pics/conback.png");
-  background-size: 100%;
+  background-size: 100% 100%;
 }
