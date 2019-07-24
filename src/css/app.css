@@ -17,6 +17,19 @@ canvas#canvas {
   display: none;
 }
 
+#crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -4px;
+  margin-left: -4px;
+  border: none;
+  padding: 0;
+  width: 8px;
+  height: 8px;
+  background-image: url("../baseq2/pics/ch1.png");
+}
+
 #overlay {
   background-image: url("../baseq2/pics/conback.png");
   background-size: 100% 100%;
