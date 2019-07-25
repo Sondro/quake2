@@ -15,7 +15,7 @@ Array.prototype.unique = function () {
       return 0;
     }
   });
-  if (sorted.length) {
+  if (sorted.length > 0) {
     var last = sorted[0];
     const result = [last];
     for (var i = 1; i < sorted.length; i++) {
@@ -26,7 +26,7 @@ Array.prototype.unique = function () {
     }
     return result;
   } else {
-    return [];
+    return sorted;
   }
 };
 
