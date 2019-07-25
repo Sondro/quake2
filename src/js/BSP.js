@@ -1,13 +1,20 @@
 Quake2.BSP = function (gl, data, index, pvs, callback) {
   const loader = new Quake2.BSP.Loader(gl, data, index, pvs);
   this._root = loader.parse(data, index);
-  this._rotation = {
-    offset: {
+  this._animation = {
+    startPosition: {
       x: 0,
       y: 0,
       z: 0,
     },
-    speed: 0,
+    endPosition: {
+      x: 0,
+      y: 0,
+      z: 0,
+    },
+    startTime: 0,
+    duration: 0,
+    rotationSpeed: 0,
   };
   this._collides = false;
   this._callback = callback || null;
@@ -17,24 +24,42 @@ Quake2.BSP.prototype.locate = function (position) {
   return this._root.locate(position);
 };
 
+Quake2.BSP.prototype.translate = function (startPosition, endPosition, speed) {
+  const dx = endPosition.x - startPosition.x;
+  const dy = endPosition.y - startPosition.y;
+  const dz = endPosition.z - startPosition.z;
+  const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+  this._animation.startPosition = startPosition;
+  this._animation.endPosition = endPosition;
+  this._animation.startTime = Date.now();
+  this._animation.duration = distance / speed;
+};
+
 Quake2.BSP.prototype.rotate = function (origin, speed) {
-  this._rotation.offset = {
+  this._animation.startPosition = {
     x: origin[0],
     y: origin[1],
     z: origin[2],
   };
-  this._rotation.speed = speed;
+  this._animation.endPosition = this._animation.startPosition;
+  this._animation.rotationSpeed = speed;
 };
 
 Quake2.BSP.prototype.render = function (worldProgram, position, t) {
   const leaf = this._root.locate(position);
-  const offset = this._rotation.offset;
-  if (this._rotation.speed) {
-    const period = Math.PI * 2000 / this._rotation.speed;
+  const startPosition = this._animation.startPosition;
+  const endPosition = this._animation.endPosition;
+  const startTime = this._animation.startTime;
+  const duration = this._animation.duration;
+  const x = startPosition.x + (endPosition.x - startPosition.x) * duration / (t - startTime);
+  const y = startPosition.y + (endPosition.y - startPosition.y) * duration / (t - startTime);
+  const z = startPosition.z + (endPosition.z - startPosition.z) * duration / (t - startTime);
+  if (this._animation.rotationSpeed) {
+    const period = Math.PI * 2000 / this._animation.rotationSpeed;
     const angle = (t % period) * Math.PI * 2 / period;
-    worldProgram.prepare2(offset.x, offset.y, offset.z, angle);
+    worldProgram.prepare2(x, y, z, angle);
   } else {
-    worldProgram.prepare2(offset.x, offset.y, offset.z, 0);
+    worldProgram.prepare2(x, y, z, 0);
   }
   leaf.render();
   return leaf;
