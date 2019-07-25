@@ -51,16 +51,24 @@ Quake2.BSP.prototype.render = function (worldProgram, position, t) {
   const endPosition = this._animation.endPosition;
   const startTime = this._animation.startTime;
   const duration = this._animation.duration;
-  const x = startPosition.x + (endPosition.x - startPosition.x) * duration / (t - startTime);
-  const y = startPosition.y + (endPosition.y - startPosition.y) * duration / (t - startTime);
-  const z = startPosition.z + (endPosition.z - startPosition.z) * duration / (t - startTime);
+  const progress = Math.min(duration, t - startTime);
+  var x, y, z, angle;
+  if (progress > 0) {
+    x = startPosition.x + (endPosition.x - startPosition.x) * duration / progress;
+    y = startPosition.y + (endPosition.y - startPosition.y) * duration / progress;
+    z = startPosition.z + (endPosition.z - startPosition.z) * duration / progress;
+  } else {
+    x = startPosition.x;
+    y = startPosition.y;
+    z = startPosition.z;
+  }
   if (this._animation.rotationSpeed) {
     const period = Math.PI * 2000 / this._animation.rotationSpeed;
-    const angle = (t % period) * Math.PI * 2 / period;
-    worldProgram.prepare2(x, y, z, angle);
+    angle = (t % period) * Math.PI * 2 / period;
   } else {
-    worldProgram.prepare2(x, y, z, 0);
+    angle = 0;
   }
+  worldProgram.prepare2(x, y, z, angle);
   leaf.render();
   return leaf;
 };
