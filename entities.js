@@ -28,13 +28,9 @@ module.exports = function (script) {
           ];
           break;
         case 'angle':
-          var splitted = value.split(/\s+/g);
-          if (splitted.length > 1) {
-            value = splitted.map(function (value) {
-              return parseFloat(value) * Math.PI / 180;
-            });
-          } else {
-            value = parseFloat(value) * Math.PI / 180;
+          value = parseFloat(value);
+          if (value > 0) {
+            value = value * Math.PI / 180;
           }
           break;
         case 'model':
