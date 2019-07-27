@@ -36,8 +36,9 @@ Quake2.Game = function (gl, assets) {
   };
 
   assets.data.entities.filter(function (entity) {
-    return entity.hasOwnProperty('targetname') ||
-        entity.hasOwnProperty('model');
+    return entity.classname !== 'func_door' && (
+        entity.hasOwnProperty('targetname') ||
+        entity.hasOwnProperty('model'));
   }).map(function (entity) {
     const play = playEntity.bind(this, entity);
     const createTarget = function () {
