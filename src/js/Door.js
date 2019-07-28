@@ -45,6 +45,7 @@ Quake2.Door.prototype.trigger = function () {
     this._open = true;
     this._moving = true;
     this._bsp.translate(this._startPosition, this._endPosition, this._speed);
+    this._setTimeout();
   }
 };
 
