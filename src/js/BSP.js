@@ -32,7 +32,7 @@ Quake2.BSP.prototype.translate = function (startPosition, endPosition, speed) {
   this._animation.startPosition = startPosition;
   this._animation.endPosition = endPosition;
   this._animation.startTime = Date.now();
-  this._animation.duration = distance / speed;
+  this._animation.duration = distance * 1000 / speed;
 };
 
 Quake2.BSP.prototype.rotate = function (origin, speed) {
@@ -54,9 +54,9 @@ Quake2.BSP.prototype.render = function (worldProgram, position, t) {
   const progress = Math.min(duration, t - startTime);
   var x, y, z, angle;
   if (progress > 0) {
-    x = startPosition.x + (endPosition.x - startPosition.x) * duration / progress;
-    y = startPosition.y + (endPosition.y - startPosition.y) * duration / progress;
-    z = startPosition.z + (endPosition.z - startPosition.z) * duration / progress;
+    x = startPosition.x + (endPosition.x - startPosition.x) * progress / duration;
+    y = startPosition.y + (endPosition.y - startPosition.y) * progress / duration;
+    z = startPosition.z + (endPosition.z - startPosition.z) * progress / duration;
   } else {
     x = startPosition.x;
     y = startPosition.y;

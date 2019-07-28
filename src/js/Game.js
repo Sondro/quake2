@@ -81,18 +81,6 @@ Quake2.Game = function (gl, assets) {
     }
   }, this);
 
-  const bindBspCallback = function (triggers) {
-    if (triggers) {
-      return function () {
-        for (var i = 0; i < triggers.length; i++) {
-          triggers[i].trigger();
-        }
-      };
-    } else {
-      return null;
-    }
-  };
-
   const pvs = Quake2.PVS.parse(assets.data);
 
   assets.data.nodes.loaded = assets.data.nodes.plane.map(function () {
@@ -103,17 +91,41 @@ Quake2.Game = function (gl, assets) {
   var bspIndex = 0;
   for (var i = 0; i < assets.data.nodes.count; i++) {
     if (!assets.data.nodes.loaded[i]) {
-      const callback = bindBspCallback(this._triggers[bspIndex++]);
+      const callback = this._bindBspCallback(bspIndex++);
       this._bsps.push(new Quake2.BSP(gl, assets.data, i, pvs, callback));
     }
   }
   this._bsp = this._bsps[0];
 
   assets.data.entities.filter(function (entity) {
-    return entity.classname === 'func_rotating';
-  }).forEach(function (entity) {
-    if (entity.model < this._bsps.length) {
-      this._bsps[entity.model].rotate(entity.origin, entity.speed * Math.PI / 180);
+    return entity.classname === 'func_rotating' &&
+        entity.model < this._bsps.length;
+  }, this).forEach(function (entity) {
+    this._bsps[entity.model].rotate(entity.origin, entity.speed * Math.PI / 180);
+  }, this);
+
+  assets.data.entities.filter(function (entity) {
+    return entity.classname === 'func_door' &&
+        entity.model < this._bsps.length;
+  }, this).map(function (entity) {
+    return {
+      entity: entity,
+      door: new Quake2.Door(entity, this._bsps[entity.model]),
+    };
+  }, this).forEach(function (pair) {
+    const entity = pair.entity;
+    const door = pair.door;
+    if (entity.hasOwnProperty('targetname')) {
+      if (!this._targets[entity.targetname]) {
+        this._targets[entity.targetname] = [];
+      }
+      this._targets[entity.targetname].push(door);
+    }
+    if (entity.hasOwnProperty('model')) {
+      if (!this._triggers[entity.model]) {
+        this._triggers[entity.model] = [];
+      }
+      this._triggers[entity.model].push(door);
     }
   }, this);
 
@@ -152,6 +164,18 @@ Quake2.Game = function (gl, assets) {
     this.camera.angle.y = spawnPoint.angle - Math.PI / 2;
   }, this);
 
+};
+
+
+Quake2.Game.prototype._bindBspCallback = function (bspIndex) {
+  return function () {
+    const triggers = this._triggers[bspIndex];
+    if (triggers) {
+      for (var i = 0; i < triggers.length; i++) {
+        triggers[i].trigger();
+      }
+    }
+  }.bind(this);
 };
 
 
