@@ -42,6 +42,8 @@ Quake2.Door.prototype.trigger = function () {
   } else if (this._moving) {
     // TODO: interrupt movement and reopen
   } else {
+    this._open = true;
+    this._moving = true;
     this._bsp.translate(this._startPosition, this._endPosition, this._speed);
   }
 };
@@ -53,5 +55,7 @@ Quake2.Door.prototype._setTimeout = function () {
 };
 
 Quake2.Door.prototype._close = function () {
+  this._open = false;
+  this._moving = true;
   this._bsp.translate(this._endPosition, this._startPosition, this._speed);
 };
