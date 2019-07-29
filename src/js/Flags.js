@@ -25,7 +25,7 @@ Quake2.Flags.prototype._define = function (parser, name, defaultValue) {
   if (name in this._hash) {
     throw new Error(`flag '${name}' is already defined`);
   } else if (name in this._uriMap) {
-    this._hash[name] = parser(this._uriMap);
+    this._hash[name] = parser(this._uriMap[name]);
   } else {
     this._hash[name] = parser(defaultValue);
   }
