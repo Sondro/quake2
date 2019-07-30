@@ -75,7 +75,7 @@ Quake2.BSP._origin = {
   z: 0,
 };
 
-Quake2.BSP.prototype._getOrigin = function (t) {
+Quake2.BSP.prototype.getOrigin = function (t) {
   const origin = Quake2.BSP._origin;
   const startPosition = this._animation.startPosition;
   const endPosition = this._animation.endPosition;
@@ -96,7 +96,7 @@ Quake2.BSP.prototype._getOrigin = function (t) {
 
 Quake2.BSP.prototype.render = function (worldProgram, position, t) {
   const leaf = this._root.locate(position);
-  const origin = this._getOrigin(t);
+  const origin = this.getOrigin(t);
   if (this._animation.rotationSpeed) {
     const period = Math.PI * 2000 / this._animation.rotationSpeed;
     angle = (t % period) * Math.PI * 2 / period;
@@ -115,7 +115,7 @@ Quake2.BSP._position = {
 };
 
 Quake2.BSP.prototype._getCorrectedPosition = function (position, t) {
-  const origin = this._getOrigin(t);
+  const origin = this.getOrigin(t);
   const result = Quake2.BSP._position;
   result.x = position.x - origin.x;
   result.y = position.y - origin.y;
