@@ -106,6 +106,7 @@ Quake2.BSP._temp = {
 };
 
 Quake2.BSP.prototype._clip = function (t, position, offset) {
+  // TODO: take rotations into account
   position = this._getCorrectedPosition(position, t);
   if (this._root.blocks) {
     const temp = Quake2.BSP._temp;

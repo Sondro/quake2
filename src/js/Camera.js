@@ -34,7 +34,6 @@ Quake2.Camera.RUNNING_SPEED = 320;  // Quake units per second
 Quake2.Camera.prototype._clip = function (t) {
   const onGround = this._bsps[0].clip(t, this.origin, this.offset);
   for (var i = 1; i < this._bsps.length; i++) {
-    // TODO: this is not taking rotations into account
     this._bsps[i].clip(t, this.origin, this.offset);
   }
   return onGround;
