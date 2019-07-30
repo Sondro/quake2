@@ -31,16 +31,17 @@ Quake2.Camera.HEIGHT = 45;          // Y offset from position
 Quake2.Camera.WALKING_SPEED = 200;  // Quake units per second
 Quake2.Camera.RUNNING_SPEED = 320;  // Quake units per second
 
-Quake2.Camera.prototype._clip = function () {
-  const onGround = this._bsps[0].clip(this.origin, this.offset);
+Quake2.Camera.prototype._clip = function (t) {
+  const onGround = this._bsps[0].clip(t, this.origin, this.offset);
   for (var i = 1; i < this._bsps.length; i++) {
     // TODO: this is not taking rotations into account
-    this._bsps[i].clip(this.origin, this.offset);
+    this._bsps[i].clip(t, this.origin, this.offset);
   }
   return onGround;
 };
 
-Quake2.Camera.prototype._move = function (dt, x, y, z) {
+Quake2.Camera.prototype._move = function (t0, t1, x, y, z) {
+  const dt = (t1 - t0) / 1000;
   this.velocity.y += y;
   const dx = x * Math.cos(this.angle.y) + z * -Math.sin(this.angle.y);
   const dy = (this.velocity.y - Quake2.Physics.GRAVITY * dt / 2) * dt;
@@ -48,14 +49,14 @@ Quake2.Camera.prototype._move = function (dt, x, y, z) {
   this.offset.x = dx;
   this.offset.y = Quake2.Physics.STEP_SIZE;
   this.offset.z = dz;
-  this._clip(this.origin, this.offset);
+  this._clip(t1, this.origin, this.offset);
   this.origin.x += this.offset.x;
   this.origin.y += this.offset.y;
   this.origin.z += this.offset.z;
   this.offset.x = 0;
   this.offset.y = dy - Quake2.Physics.STEP_SIZE;
   this.offset.z = 0;
-  this.onGround = this._clip(this.origin, this.offset);
+  this.onGround = this._clip(t1, this.origin, this.offset);
   this.origin.x += this.offset.x;
   this.origin.y += this.offset.y;
   this.origin.z += this.offset.z;
@@ -112,5 +113,5 @@ Quake2.Camera.prototype.tick = function (t0, t1, keys) {
   if (keys[32] && this.onGround) {  // Space
     y = Quake2.Physics.GRAVITY * 10 * dt;
   }
-  this._move(dt, x, y, z);
+  this._move(t0, t1, x, y, z);
 };

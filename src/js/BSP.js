@@ -45,32 +45,58 @@ Quake2.BSP.prototype.rotate = function (origin, speed) {
   this._animation.rotationSpeed = speed;
 };
 
-Quake2.BSP.prototype.render = function (worldProgram, position, t) {
-  const leaf = this._root.locate(position);
+Quake2.BSP._origin = {
+  x: 0,
+  y: 0,
+  z: 0,
+};
+
+Quake2.BSP.prototype._getOrigin = function (t) {
+  const origin = Quake2.BSP._origin;
   const startPosition = this._animation.startPosition;
   const endPosition = this._animation.endPosition;
   const startTime = this._animation.startTime;
   const duration = this._animation.duration;
   const progress = Math.min(duration, t - startTime);
-  var x, y, z, angle;
   if (progress > 0) {
-    x = startPosition.x + (endPosition.x - startPosition.x) * progress / duration;
-    y = startPosition.y + (endPosition.y - startPosition.y) * progress / duration;
-    z = startPosition.z + (endPosition.z - startPosition.z) * progress / duration;
+    origin.x = startPosition.x + (endPosition.x - startPosition.x) * progress / duration;
+    origin.y = startPosition.y + (endPosition.y - startPosition.y) * progress / duration;
+    origin.z = startPosition.z + (endPosition.z - startPosition.z) * progress / duration;
   } else {
-    x = startPosition.x;
-    y = startPosition.y;
-    z = startPosition.z;
+    origin.x = startPosition.x;
+    origin.y = startPosition.y;
+    origin.z = startPosition.z;
   }
+  return origin;
+};
+
+Quake2.BSP.prototype.render = function (worldProgram, position, t) {
+  const leaf = this._root.locate(position);
+  const origin = this._getOrigin(t);
   if (this._animation.rotationSpeed) {
     const period = Math.PI * 2000 / this._animation.rotationSpeed;
     angle = (t % period) * Math.PI * 2 / period;
   } else {
     angle = 0;
   }
-  worldProgram.prepare2(x, y, z, angle);
+  worldProgram.prepare2(origin.x, origin.y, origin.z, angle);
   leaf.render();
   return leaf;
+};
+
+Quake2.BSP._position = {
+  x: 0,
+  y: 0,
+  z: 0,
+};
+
+Quake2.BSP.prototype._getCorrectedPosition = function (position, t) {
+  const origin = this._getOrigin(t);
+  const result = Quake2.BSP._position;
+  result.x = position.x - origin.x;
+  result.y = position.y - origin.y;
+  result.z = position.z - origin.z;
+  return result;
 };
 
 Quake2.BSP._temp = {
@@ -79,7 +105,8 @@ Quake2.BSP._temp = {
   z: 0,
 };
 
-Quake2.BSP.prototype._clip = function (position, offset) {
+Quake2.BSP.prototype._clip = function (t, position, offset) {
+  position = this._getCorrectedPosition(position, t);
   if (this._root.blocks) {
     const temp = Quake2.BSP._temp;
     temp.x = position.x + offset.x;
@@ -98,8 +125,8 @@ Quake2.BSP.prototype._clip = function (position, offset) {
   }
 };
 
-Quake2.BSP.prototype.clip = function (position, offset) {
-  const collides = this._clip(position, offset);
+Quake2.BSP.prototype.clip = function (t, position, offset) {
+  const collides = this._clip(t, position, offset);
   if (collides && collides !== this._collides) {
     this._callback && this._callback();
   }
