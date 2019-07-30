@@ -174,13 +174,13 @@ module.exports = function (buffer, texturePath, palette) {
     output.nodes.back.push(node.readInt32LE(8));
     output.nodes.min.push(
         node.readInt16LE(12),
-        node.readInt16LE(14),
-        node.readInt16LE(16)
+        node.readInt16LE(16),
+        node.readInt16LE(14)
         );
     output.nodes.max.push(
         node.readInt16LE(18),
-        node.readInt16LE(20),
-        node.readInt16LE(22)
+        node.readInt16LE(22),
+        node.readInt16LE(20)
         );
     output.nodes.faces.first.push(node.readUInt16LE(24));
     output.nodes.faces.count.push(node.readUInt16LE(26));
