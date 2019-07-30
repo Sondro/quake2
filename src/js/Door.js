@@ -5,24 +5,25 @@ Quake2.Door = function (descriptor, bsp) {
     y: 0,
     z: 0,
   };
-  const offset = descriptor.lip || 8;
+  const lip = descriptor.lip || 8;
+  const size = bsp.getSize();
   if (descriptor.angle === -1) {
     this._endPosition = {
       x: 0,
-      y: offset,
+      y: size.y - lip,
       z: 0,
     };
   } else if (descriptor.angle === -2) {
     this._endPosition = {
       x: 0,
-      y: -offset,
+      y: lip - size.y,
       z: 0,
     };
   } else {
     this._endPosition = {
-      x: Math.cos(descriptor.angle) * offset,
+      x: Math.cos(descriptor.angle) * size.x - lip,
       y: 0,
-      z: Math.sin(descriptor.angle) * offset,
+      z: Math.sin(descriptor.angle) * size.z - lip,
     };
   }
   this._speed = descriptor.speed || 100;

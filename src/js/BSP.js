@@ -1,6 +1,16 @@
 Quake2.BSP = function (gl, data, index, pvs, callback) {
   const loader = new Quake2.BSP.Loader(gl, data, index, pvs);
   this._root = loader.parse(data, index);
+  this._min = {
+    x: data.nodes.min[index * 3],
+    y: data.nodes.min[index * 3 + 2],
+    z: data.nodes.min[index * 3 + 1],
+  };
+  this._max = {
+    x: data.nodes.max[index * 3],
+    y: data.nodes.max[index * 3 + 2],
+    z: data.nodes.max[index * 3 + 1],
+  };
   this._animation = {
     startPosition: {
       x: 0,
@@ -22,6 +32,20 @@ Quake2.BSP = function (gl, data, index, pvs, callback) {
 
 Quake2.BSP.prototype.locate = function (position) {
   return this._root.locate(position);
+};
+
+Quake2.BSP._size = {
+  x: 0,
+  y: 0,
+  z: 0,
+};
+
+Quake2.BSP.prototype.getSize = function () {
+  const size = Quake2.BSP._size;
+  size.x = this._max.x - this._min.x;
+  size.y = this._max.y - this._min.y;
+  size.z = this._max.z - this._min.z;
+  return size;
 };
 
 Quake2.BSP.prototype.translate = function (startPosition, endPosition, speed) {
