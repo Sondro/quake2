@@ -3,13 +3,13 @@ Quake2.BSP = function (gl, data, index, pvs, callback) {
   this._root = loader.parse(data, index);
   this._min = {
     x: data.nodes.min[index * 3],
-    y: data.nodes.min[index * 3 + 2],
-    z: data.nodes.min[index * 3 + 1],
+    y: data.nodes.min[index * 3 + 1],
+    z: data.nodes.min[index * 3 + 2],
   };
   this._max = {
     x: data.nodes.max[index * 3],
-    y: data.nodes.max[index * 3 + 2],
-    z: data.nodes.max[index * 3 + 1],
+    y: data.nodes.max[index * 3 + 1],
+    z: data.nodes.max[index * 3 + 2],
   };
   this._animation = {
     startPosition: {
