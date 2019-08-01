@@ -127,6 +127,7 @@ Quake2.Loader.prototype.loadSounds = function (names) {
 
 Quake2.Loader.prototype._loadModelSounds = function () {
   return this.loadSounds([
+      Quake2.Door,
       Quake2.Entities.Explosion,
       // TODO: other entities
       Quake2.Weapons.Blaster,

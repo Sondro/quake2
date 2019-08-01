@@ -34,6 +34,11 @@ Quake2.Door = function (descriptor, bsp) {
   this._close = this._close.bind(this);
 };
 
+Quake2.Door.SOUNDS = [
+    'doors/dr1_strt',
+    'doors/dr1_end',
+];
+
 Quake2.Door.prototype.getDuration = function () {
   const dx = this._endPosition.x - this._startPosition.x;
   const dy = this._endPosition.y - this._startPosition.y;
@@ -55,6 +60,7 @@ Quake2.Door.prototype.trigger = function () {
     this._moving = true;
     const duration = this.getDuration();
     this._bsp.translate(this._startPosition, this._endPosition, duration);
+    Quake2.Sound.play('doors/dr1_strt');
     this._setTimeout(duration);
   }
 };
@@ -72,5 +78,6 @@ Quake2.Door.prototype._close = function () {
   this._bsp.translate(this._endPosition, this._startPosition, duration);
   window.setTimeout(function () {
     this._moving = false;
+    Quake2.Sound.play('doors/dr1_end');
   }.bind(this), duration);
 };
