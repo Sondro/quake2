@@ -48,15 +48,11 @@ Quake2.BSP.prototype.getSize = function () {
   return size;
 };
 
-Quake2.BSP.prototype.translate = function (startPosition, endPosition, speed) {
-  const dx = endPosition.x - startPosition.x;
-  const dy = endPosition.y - startPosition.y;
-  const dz = endPosition.z - startPosition.z;
-  const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+Quake2.BSP.prototype.translate = function (startPosition, endPosition, duration) {
   this._animation.startPosition = startPosition;
   this._animation.endPosition = endPosition;
   this._animation.startTime = Date.now();
-  this._animation.duration = distance * 1000 / speed;
+  this._animation.duration = duration;
 };
 
 Quake2.BSP.prototype.rotate = function (origin, speed) {

@@ -34,30 +34,43 @@ Quake2.Door = function (descriptor, bsp) {
   this._close = this._close.bind(this);
 };
 
+Quake2.Door.prototype.getDuration = function () {
+  const dx = this._endPosition.x - this._startPosition.x;
+  const dy = this._endPosition.y - this._startPosition.y;
+  const dz = this._endPosition.z - this._startPosition.z;
+  const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+  return distance * 1000 / this._speed;
+};
+
 Quake2.Door.prototype.trigger = function () {
   if (this._open) {
     if (this._timeout !== null) {
       window.clearTimeout(this._timeout);
-      this._setTimeout();
+      this._setTimeout(0);
     }
   } else if (this._moving) {
     // TODO: interrupt movement and reopen
   } else {
     this._open = true;
     this._moving = true;
-    this._bsp.translate(this._startPosition, this._endPosition, this._speed);
-    this._setTimeout();
+    const duration = this.getDuration();
+    this._bsp.translate(this._startPosition, this._endPosition, duration);
+    this._setTimeout(duration);
   }
 };
 
-Quake2.Door.prototype._setTimeout = function () {
+Quake2.Door.prototype._setTimeout = function (delay) {
   if (this._wait > 0) {
-    this._timeout = window.setTimeout(this._close, this._wait * 1000);
+    this._timeout = window.setTimeout(this._close, delay + this._wait * 1000);
   }
 };
 
 Quake2.Door.prototype._close = function () {
   this._open = false;
   this._moving = true;
-  this._bsp.translate(this._endPosition, this._startPosition, this._speed);
+  const duration = this.getDuration();
+  this._bsp.translate(this._endPosition, this._startPosition, duration);
+  window.setTimeout(function () {
+    this._moving = false;
+  }.bind(this), duration);
 };
