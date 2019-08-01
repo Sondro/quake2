@@ -74,11 +74,11 @@ Quake2.BSP._origin = {
 Quake2.BSP.prototype.getOrigin = function (t) {
   const origin = Quake2.BSP._origin;
   const startPosition = this._animation.startPosition;
-  const endPosition = this._animation.endPosition;
-  const startTime = this._animation.startTime;
   const duration = this._animation.duration;
-  const progress = Math.min(duration, t - startTime);
-  if (progress > 0) {
+  if (duration > 0) {
+    const endPosition = this._animation.endPosition;
+    const startTime = this._animation.startTime;
+    const progress = Math.min(duration, t - startTime);
     origin.x = startPosition.x + (endPosition.x - startPosition.x) * progress / duration;
     origin.y = startPosition.y + (endPosition.y - startPosition.y) * progress / duration;
     origin.z = startPosition.z + (endPosition.z - startPosition.z) * progress / duration;
