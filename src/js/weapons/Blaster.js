@@ -7,16 +7,18 @@ Quake2.Weapons.Blaster = function (models) {
 
 Quake2.Weapons.Blaster.prototype.tick = function (t, keys) {
   if (this._firing) {
-    if (keys[17]) {
-      Quake2.Sound.playWeapon('blastf1a');
-    } else if (this._model.isAtFrame(t, 2)) {
-      this._firing = false;
-      this._model.play('idle');
+    if (this._model.isRestarting(t)) {
+      if (keys[17]) {
+        Quake2.Sound.playWeapon('blastf1a');
+      } else {
+        this._firing = false;
+        this._model.play('idle');
+      }
     }
   } else if (keys[17]) {  // control key
     this._firing = true;
-    Quake2.Sound.playWeapon('blastf1a');
     this._model.play('pow');
+    Quake2.Sound.playWeapon('blastf1a');
   }
 };
 
