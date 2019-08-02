@@ -250,16 +250,16 @@ Quake2.BSP.Node.prototype.clip = function (position, offset, final) {
   const x0 = position.x;
   const y0 = position.y;
   const z0 = position.z;
-  const x1 = x0 + offset.x;
-  const y1 = y0 + offset.y;
-  const z1 = z0 + offset.z;
+  const x1 = final.x;
+  const y1 = final.y;
+  const z1 = final.z;
   const a0 = x0 * nx + y0 * ny + z0 * nz;
   const a1 = x1 * nx + y1 * ny + z1 * nz;
   if (a0 < d) {
     if (a1 < d) {
       return this.back.clip(position, offset, final);
     } else {
-      if (this.collides(final)) {
+      if (this.front.collides(final)) {
         Quake2.Physics.clip(position, offset, -nx, -ny, -nz, -d);
         return true;
       } else {
@@ -268,7 +268,7 @@ Quake2.BSP.Node.prototype.clip = function (position, offset, final) {
     }
   } else {
     if (a1 < d) {
-      if (this.collides(final)) {
+      if (this.back.collides(final)) {
         Quake2.Physics.clip(position, offset, nx, ny, nz, d);
         return true;
       } else {
