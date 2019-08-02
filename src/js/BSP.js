@@ -247,14 +247,8 @@ Quake2.BSP.Node.prototype.clip = function (position, offset, final) {
   const ny = this.plane[1];
   const nz = this.plane[2];
   const d = this.plane[3];
-  const x0 = position.x;
-  const y0 = position.y;
-  const z0 = position.z;
-  const x1 = final.x;
-  const y1 = final.y;
-  const z1 = final.z;
-  const a0 = x0 * nx + y0 * ny + z0 * nz;
-  const a1 = x1 * nx + y1 * ny + z1 * nz;
+  const a0 = position.x * nx + position.y * ny + position.z * nz;
+  const a1 = final.x * nx + final.y * ny + final.z * nz;
   if (a0 < d) {
     if (a1 < d) {
       return this.back.clip(position, offset, final);
