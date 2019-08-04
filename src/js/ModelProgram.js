@@ -52,9 +52,9 @@ Quake2.ModelProgram.prototype.prepareForEntities = function () {
   gl.useProgram(this._program);
   gl.uniform3f(
       this.locations.camera.position,
-      this._camera.head.x,
-      this._camera.head.y,
-      this._camera.head.z
+      this._camera.origin.x,
+      this._camera.origin.y,
+      this._camera.origin.z
       );
   gl.uniform2f(
       this.locations.camera.angle,

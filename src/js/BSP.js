@@ -125,7 +125,7 @@ Quake2.BSP._temp = {
   z: 0,
 };
 
-Quake2.BSP.prototype._clip = function (t, position, offset) {
+Quake2.BSP.prototype._clip = function (t, position, radius, offset) {
   // TODO: take rotations into account
   position = this._getCorrectedPosition(position, t);
   if (this._root.blocks) {
@@ -134,7 +134,7 @@ Quake2.BSP.prototype._clip = function (t, position, offset) {
     temp.y = position.y + offset.y;
     temp.z = position.z + offset.z;
     var result = false;
-    while (this._root.clip(position, offset, temp)) {
+    while (this._root.clip(position, radius, offset, temp)) {
       result = true;
       temp.x = position.x + offset.x;
       temp.y = position.y + offset.y;
@@ -142,12 +142,12 @@ Quake2.BSP.prototype._clip = function (t, position, offset) {
     }
     return result;
   } else {
-    return this._root.collides(position);
+    return this._root.collides(position, radius);
   }
 };
 
-Quake2.BSP.prototype.clip = function (t, position, offset) {
-  const collides = this._clip(t, position, offset);
+Quake2.BSP.prototype.clip = function (t, position, radius, offset) {
+  const collides = this._clip(t, position, radius, offset);
   if (collides && collides !== this._collides) {
     this._callback && this._callback();
   }
@@ -232,17 +232,20 @@ Quake2.BSP.Node.prototype.locate = function (position) {
   }
 };
 
-Quake2.BSP.Node.prototype.collides = function (position) {
+Quake2.BSP.Node.prototype.collides = function (position, radius) {
   const x = position.x * this.plane[0] + position.y * this.plane[1] +
       position.z * this.plane[2] - this.plane[3];
-  if (x < 0) {
-    return this.back.collides(position);
+  if (x - radius < 0) {
+    return this.back.collides(position, radius);
+  } else if (x + radius >= 0) {
+    return this.front.collides(position, radius);
   } else {
-    return this.front.collides(position);
+    return this.front.collides(position, radius) ||
+        this.back.collides(position, radius);
   }
 };
 
-Quake2.BSP.Node.prototype.clip = function (position, offset, final) {
+Quake2.BSP.Node.prototype.clip = function (position, radius, offset, final) {
   const nx = this.plane[0];
   const ny = this.plane[1];
   const nz = this.plane[2];
@@ -250,26 +253,26 @@ Quake2.BSP.Node.prototype.clip = function (position, offset, final) {
   const a0 = position.x * nx + position.y * ny + position.z * nz;
   const a1 = final.x * nx + final.y * ny + final.z * nz;
   if (a0 < d) {
-    if (a1 < d) {
-      return this.back.clip(position, offset, final);
+    if (a1 - radius < d) {
+      return this.back.clip(position, radius, offset, final);
     } else {
-      if (this.front.collides(final)) {
-        Quake2.Physics.clip(position, offset, -nx, -ny, -nz, -d);
+      if (this.front.collides(final, radius)) {
+        Quake2.Physics.clip(position, radius, offset, -nx, -ny, -nz, -d);
         return true;
       } else {
         return false;
       }
     }
   } else {
-    if (a1 < d) {
-      if (this.back.collides(final)) {
-        Quake2.Physics.clip(position, offset, nx, ny, nz, d);
+    if (a1 + radius < d) {
+      if (this.back.collides(final, radius)) {
+        Quake2.Physics.clip(position, radius, offset, nx, ny, nz, d);
         return true;
       } else {
         return false;
       }
     } else {
-      return this.front.clip(position, offset, final);
+      return this.front.clip(position, radius, offset, final);
     }
   }
 };
@@ -300,7 +303,7 @@ Quake2.BSP.Leaf.prototype.locate = function () {
   return this;
 };
 
-Quake2.BSP.Leaf.prototype.collides = function (position) {
+Quake2.BSP.Leaf.prototype.collides = function () {
   return this.empty;
 };
 

@@ -1,11 +1,11 @@
 Quake2.Physics = {};
 
 
-Quake2.Physics.clip = function (position, offset, nx, ny, nz, d) {
+Quake2.Physics.clip = function (position, radius, offset, nx, ny, nz, d) {
   const x = position.x + offset.x;
   const y = position.y + offset.y;
   const z = position.z + offset.z;
-  const backoff = d - x * nx - y * ny - z * nz + Quake2.Physics.EPSILON;
+  const backoff = d - x * nx - y * ny - z * nz + radius;
   offset.x += nx * backoff;
   offset.y += ny * backoff;
   offset.z += nz * backoff;

@@ -5,11 +5,6 @@ Quake2.Camera = function (bsps) {
     y: 0,
     z: 0,
   };
-  this.head = {
-    x: 0,
-    y: 0,
-    z: 0,
-  };
   this.offset = {
     x: 0,
     y: 0,
@@ -27,14 +22,15 @@ Quake2.Camera = function (bsps) {
   this.onGround = false;
 };
 
-Quake2.Camera.HEIGHT = 45;          // Y offset from position
+Quake2.Camera.HEIGHT = 20;          // Y offset from position
 Quake2.Camera.WALKING_SPEED = 200;  // Quake units per second
 Quake2.Camera.RUNNING_SPEED = 320;  // Quake units per second
 
 Quake2.Camera.prototype._clip = function (t) {
-  const onGround = this._bsps[0].clip(t, this.origin, this.offset);
+  const radius = Quake2.Camera.HEIGHT;
+  const onGround = this._bsps[0].clip(t, this.origin, radius, this.offset);
   for (var i = 1; i < this._bsps.length; i++) {
-    this._bsps[i].clip(t, this.origin, this.offset);
+    this._bsps[i].clip(t, this.origin, radius, this.offset);
   }
   return onGround;
 };
@@ -55,13 +51,10 @@ Quake2.Camera.prototype._move = function (t0, t1, x, y, z) {
   this.offset.x = 0;
   this.offset.y = dy - Quake2.Physics.STEP_SIZE;
   this.offset.z = 0;
-  this.onGround = this._clip(t1, this.origin, this.offset);
+  this.onGround = this._clip(t1);
   this.origin.x += this.offset.x;
   this.origin.y += this.offset.y;
   this.origin.z += this.offset.z;
-  this.head.x = this.origin.x;
-  this.head.y = this.origin.y + Quake2.Camera.HEIGHT;
-  this.head.z = this.origin.z;
   if (this.onGround) {
     this.velocity.y = 0;
   } else {
@@ -71,11 +64,8 @@ Quake2.Camera.prototype._move = function (t0, t1, x, y, z) {
 
 Quake2.Camera.prototype.setPosition = function (x, y, z) {
   this.origin.x = x;
-  this.origin.y = y;
+  this.origin.y = y + Quake2.Camera.HEIGHT;
   this.origin.z = z;
-  this.head.x = x;
-  this.head.y = y + Quake2.Camera.HEIGHT;
-  this.head.z = z;
 };
 
 Quake2.Camera.prototype.rotate = function (x, y) {

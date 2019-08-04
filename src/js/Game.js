@@ -211,10 +211,10 @@ Quake2.Game.prototype.render = function () {
   this._skyBox.render();
 
   this._worldProgram.prepare1();
-  const leaf = this._bsp.render(this._worldProgram, this.camera.head, t);
+  const leaf = this._bsp.render(this._worldProgram, this.camera.origin, t);
 
   for (var i = 1; i < this._bsps.length; i++) {
-    this._bsps[i].render(this._worldProgram, this.camera.head, t);
+    this._bsps[i].render(this._worldProgram, this.camera.origin, t);
   }
 
   this._modelProgram.prepareForEntities();
