@@ -22,7 +22,7 @@ Quake2.Camera = function (bsps) {
   this.onGround = false;
 };
 
-Quake2.Camera.HEIGHT = 20;          // Y offset from position
+Quake2.Camera.HEIGHT = 45;          // Y offset from position
 Quake2.Camera.WALKING_SPEED = 200;  // Quake units per second
 Quake2.Camera.RUNNING_SPEED = 320;  // Quake units per second
 
@@ -44,7 +44,7 @@ Quake2.Camera.prototype._move = function (t0, t1, x, y, z) {
   this.offset.x = dx;
   this.offset.y = Quake2.Physics.STEP_SIZE;
   this.offset.z = dz;
-  this._clip(t1, this.origin, this.offset);
+  this._clip(t1);
   this.origin.x += this.offset.x;
   this.origin.y += this.offset.y;
   this.origin.z += this.offset.z;

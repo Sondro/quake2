@@ -264,7 +264,7 @@ Quake2.BSP.Node.prototype.clip = function (position, radius, offset, final) {
       }
     }
   } else {
-    if (a1 + radius < d) {
+    if (a1 - radius < d) {
       if (this.back.collides(final, radius)) {
         Quake2.Physics.clip(position, radius, offset, nx, ny, nz, d);
         return true;
