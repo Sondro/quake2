@@ -235,9 +235,9 @@ Quake2.BSP.Node.prototype.locate = function (position) {
 Quake2.BSP.Node.prototype.collides = function (position, radius) {
   const x = position.x * this.plane[0] + position.y * this.plane[1] +
       position.z * this.plane[2] - this.plane[3];
-  if (x - radius < 0) {
+  if (x + radius < 0) {
     return this.back.collides(position, radius);
-  } else if (x + radius >= 0) {
+  } else if (x - radius >= 0) {
     return this.front.collides(position, radius);
   } else {
     return this.front.collides(position, radius) ||
