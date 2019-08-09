@@ -253,8 +253,18 @@ Quake2.BSP.Node.prototype.clip = function (position, radius, offset, final) {
   const a0 = position.x * nx + position.y * ny + position.z * nz;
   const a1 = final.x * nx + final.y * ny + final.z * nz;
   if (a0 < d) {
-    if (a1 - radius < d) {
+    if (a1 + radius < d) {
       return this.back.clip(position, radius, offset, final);
+    } else if (a1 - radius < d) {
+      if (this.front.collides(final, radius)) {
+        Quake2.Physics.clip(position, radius, offset, -nx, -ny, -nz, -d);
+        return true;
+      } else if (this.back.collides(final, radius)) {
+        Quake2.Physics.clip(position, radius, offset, nx, ny, nz, d);
+        return true;
+      } else {
+        return false;
+      }
     } else {
       if (this.front.collides(final, radius)) {
         Quake2.Physics.clip(position, radius, offset, -nx, -ny, -nz, -d);
@@ -264,15 +274,25 @@ Quake2.BSP.Node.prototype.clip = function (position, radius, offset, final) {
       }
     }
   } else {
-    if (a1 - radius < d) {
+    if (a1 - radius >= d) {
+      return this.front.clip(position, radius, offset, final);
+    } else if (a1 + radius >= d) {
+      if (this.back.collides(final, radius)) {
+        Quake2.Physics.clip(position, radius, offset, nx, ny, nz, d);
+        return true;
+      } else if (this.front.collides(final, radius)) {
+        Quake2.Physics.clip(position, radius, offset, -nx, -ny, -nz, -d);
+        return true;
+      } else {
+        return false;
+      }
+    } else {
       if (this.back.collides(final, radius)) {
         Quake2.Physics.clip(position, radius, offset, nx, ny, nz, d);
         return true;
       } else {
         return false;
       }
-    } else {
-      return this.front.clip(position, radius, offset, final);
     }
   }
 };
